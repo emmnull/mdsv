@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "esModuleInterop": true
+  },
+  "exclude": ["**/node_modules", "**/dist"],
+  "include": ["packages/**/*"]
+}
