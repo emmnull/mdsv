@@ -1,0 +1,15 @@
+{
+  "name": "common",
+  "version": "0.0.0-dev",
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "exports": {
+    "./constants": {
+      "default": "./src/constants.js",
+      "import": "./src/constants.js"
+    }
+  },
+  "main": "index.js",
+  "scripts": {}
+}
