@@ -1,0 +1,32 @@
+{
+  "name": "micromark-extension-svelte",
+  "version": "0.0.0-dev",
+  "description": "Micromark extensions for svelte syntax inside markdown",
+  "keywords": [
+    "markdown",
+    "svelte",
+    "micromark",
+    "unified",
+    "tokens"
+  ],
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "node --test --watch",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "common": "workspace:^",
+    "micromark-factory-space": "^2.0.1",
+    "micromark-util-character": "^2.1.1",
+    "micromark-util-combine-extensions": "^2.0.1",
+    "micromark-util-html-tag-name": "^2.0.1",
+    "micromark-util-resolve-all": "^2.0.1",
+    "micromark-util-symbol": "^2.0.1",
+    "micromark-util-types": "^2.0.2"
+  }
+}
