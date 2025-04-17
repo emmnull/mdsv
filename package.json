@@ -1,7 +1,7 @@
 {
   "name": "mdsv",
   "version": "0.0.0-dev",
-  "description": "Monorepo for mdsvelte: markdown for svelte",
+  "description": "Bringing svelte to markdown",
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
