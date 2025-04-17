@@ -1,0 +1,14 @@
+{
+  "name": "remark-mdsvelte",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --test --watch",
+    "test": "node --test"
+  },
+  "packageManager": "pnpm@10.6.5"
+}
