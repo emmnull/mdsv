@@ -1,7 +1,7 @@
 {
   "name": "mdsv",
   "version": "0.0.0-dev",
-  "description": "Bringing svelte to markdown",
+  "description": "Bridging svelte and markdown.",
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",

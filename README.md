@@ -1,3 +1,3 @@
 # Markdown for svelte
 
-Mdsvelte is a utility suite aimed at bringing fussless markdown integration to your svelte projects.
+Mdsv is a utility suite built on the [unified](https://unifiedjs.com/) ecosystem and aimed at bringing fussless markdown integration to your svelte projects.
