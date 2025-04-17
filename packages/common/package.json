@@ -5,11 +5,8 @@
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
   "exports": {
-    "./constants": {
-      "default": "./src/constants.js",
-      "import": "./src/constants.js"
-    }
+    "./constants": "./src/constants.js",
+    "./utils": "./src/utils.js"
   },
-  "main": "index.js",
-  "scripts": {}
+  "main": "index.js"
 }
