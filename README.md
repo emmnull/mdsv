@@ -7,6 +7,8 @@
   <p>Markdown for Svelte</p>
 </h1>
 
-*Mdsv* is a utility suite built on the [unified](https://unifiedjs.com/) ecosystem and aimed at bringing fussless markdown integration to your Svelte projects.
+_Mdsv_ is a utility suite built on the [_Unified_](https://unifiedjs.com/) ecosystem and aimed at bringing fussless markdown integration to your [_Svelte_](https://svelte.dev/) projects.
 
-At it core, it consists in granular integrations for Micromark and Remark that support *basic* tokenization and serialization of Svelte-related syntax within markdown. By basic, we mean that it does not strive to perform any strong validation whatsoever and is instead mostly concerned with structural markers, leaving the bulk of semantic validation to the Svelte parser.
+✍️ Its main goal is to let you write Svelte markup and expressions inside markdown documents. Note that it doesn't strive to perform any strong validation whatsoever and is instead mostly concerned with structural markers, leaving the bulk of semantic validation to the Svelte parser.
+
+At its core, it consists in granular integrations for [_Micromark_](https://github.com/micromark/micromark) and [_Remark_](https://github.com/remarkjs/remark) to support _basic_ tokenization and serialization of Svelte-related syntax.
