@@ -11,7 +11,7 @@
     "test": "node --test"
   },
   "devDependencies": {
-    "svelte": "^5.27.2"
+    "svelte": "^5.28.1"
   },
   "packageManager": "pnpm@10.6.5"
 }
