@@ -10,7 +10,7 @@ import { codes } from 'micromark-util-symbol';
  * @param {State} ok
  * @param {State} nok
  */
-export function createTagName(effects, ok, nok) {
+export function factoryTagName(effects, ok, nok) {
   return nameStart;
 
   /** @type {State} */

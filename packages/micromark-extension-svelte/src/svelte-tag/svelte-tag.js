@@ -9,7 +9,7 @@ import {
   markdownSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
-import { createPlainExpression } from '../plain-expression.js';
+import { factoryPlainExpression } from '../factory-plain-expression.js';
 
 /** @returns {Extension} */
 export function svelteTag() {
@@ -103,7 +103,7 @@ function tokenize(effects, ok, nok) {
       return afterName;
     }
     effects.enter(types.svelteTagValue);
-    return createPlainExpression(effects, afterValue, nok)(code);
+    return factoryPlainExpression(effects, afterValue, nok)(code);
   }
 
   /** @param {typeof codes.rightCurlyBrace} brace */

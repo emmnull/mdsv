@@ -1,4 +1,4 @@
-/** @import {Tokenizer, State, Code, Effects, Construct, Previous} from 'micromark-util-types'; */
+/** @import {State, Code, Effects} from 'micromark-util-types'; */
 
 import { assert } from 'common/utils';
 import { factorySpace } from 'micromark-factory-space';
@@ -7,7 +7,7 @@ import {
   markdownLineEndingOrSpace,
 } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
-import { createPlainExpression } from '../plain-expression.js';
+import { factoryPlainExpression } from '../factory-plain-expression.js';
 
 /**
  * Creates a state machine for parsing tag content (attributes, etc.) until
@@ -16,16 +16,16 @@ import { createPlainExpression } from '../plain-expression.js';
  * @param {Effects} effects
  * @param {(
  *   code: typeof codes.greaterThan | typeof codes.slash,
- * ) => State | undefined} close
+ * ) => State | undefined} ok
  * @param {State} nok State.
  */
-export function createTagContent(effects, close, nok) {
+export function factoryTagAttributes(effects, ok, nok) {
   return content;
 
   /** @type {State} */
   function content(code) {
     if (code === codes.slash || code === codes.greaterThan) {
-      return close(code);
+      return ok(code);
     }
     if (code === codes.eof) {
       return nok;
@@ -38,7 +38,7 @@ export function createTagContent(effects, close, nok) {
     }
     if (code === codes.leftCurlyBrace) {
       effects.consume(code);
-      return createPlainExpression(effects, contentBracedEnd, nok);
+      return factoryPlainExpression(effects, contentBracedEnd, nok);
     }
     effects.consume(code);
     return content;
@@ -81,7 +81,7 @@ export function createTagContent(effects, close, nok) {
         return nok;
       }
       if (code === codes.leftCurlyBrace) {
-        return createPlainExpression(effects, quoteBraceEnd, nok)(code);
+        return factoryPlainExpression(effects, quoteBraceEnd, nok)(code);
       }
       effects.consume(code);
       return insideQuote;

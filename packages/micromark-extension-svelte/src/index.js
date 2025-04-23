@@ -4,9 +4,12 @@ import {
   combineExtensions,
   combineHtmlExtensions,
 } from 'micromark-util-combine-extensions';
-import { htmlSvelteBlock, svelteBlock } from './svelte-block.js';
-import { htmlSvelteExpression, svelteExpression } from './svelte-expression.js';
-import { htmlSvelteTag, svelteTag } from './svelte-tag.js';
+import { htmlSvelteBlock, svelteBlock } from './svelte-block/svelte-block.js';
+import {
+  htmlSvelteExpression,
+  svelteExpression,
+} from './svelte-expression/svelte-expression.js';
+import { htmlSvelteTag, svelteTag } from './svelte-tag/svelte-tag.js';
 
 /** @returns {Extension} */
 export function svelte() {

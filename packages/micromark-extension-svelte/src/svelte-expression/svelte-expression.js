@@ -3,7 +3,7 @@
 import { types } from 'common/constants';
 import { assert } from 'common/utils';
 import { codes } from 'micromark-util-symbol';
-import { createPlainExpression } from '../plain-expression.js';
+import { factoryPlainExpression } from '../factory-plain-expression.js';
 
 /** @returns {Extension} */
 export function svelteExpression() {
@@ -57,7 +57,7 @@ function tokenize(effects, ok, nok) {
       return nok;
     }
     effects.enter(types.svelteExpressionValue);
-    return createPlainExpression(effects, end, nok)(code);
+    return factoryPlainExpression(effects, end, nok)(code);
   }
 
   /** @param {typeof codes.rightCurlyBrace} brace */

@@ -8,6 +8,10 @@ import {
   htmlSvelteFlowElement,
   svelteFlowElement,
 } from './svelte-flow-element.js';
+import {
+  htmlSvelteTextElement,
+  svelteTextElement,
+} from './svelte-text-element.js';
 
 /**
  * Micromark extension to replace core HTML parsing with Svelte-aware parsing.
@@ -15,10 +19,7 @@ import {
  * @returns {Extension}
  */
 export function svelteElement() {
-  return combineExtensions([
-    svelteFlowElement(),
-    // svelteElementText()
-  ]);
+  return combineExtensions([svelteFlowElement(), svelteTextElement()]);
 }
 
 /**
@@ -30,6 +31,6 @@ export function svelteElement() {
 export function htmlSvelteElement() {
   return combineHtmlExtensions([
     htmlSvelteFlowElement(),
-    // htmlSvelteElementText(),
+    htmlSvelteTextElement(),
   ]);
 }

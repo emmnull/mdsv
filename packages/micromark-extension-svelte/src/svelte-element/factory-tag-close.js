@@ -6,12 +6,12 @@ import { markdownLineEndingOrSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
 
 /**
- * @param {string} tagName
  * @param {Effects} effects
  * @param {State} ok
  * @param {State} nok
+ * @param {string} tagName
  */
-export function createTagMatch(tagName, effects, ok, nok) {
+export function factoryTagClose(effects, ok, nok, tagName) {
   let index = 0;
 
   return start;
@@ -55,6 +55,7 @@ export function createTagMatch(tagName, effects, ok, nok) {
     }
     return end(code);
   }
+
   /** @type {State} */
   function end(code) {
     if (code === codes.greaterThan) {

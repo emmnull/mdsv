@@ -5,10 +5,10 @@ import { codes } from 'micromark-util-symbol';
 
 /**
  * @param {Effects} effects,
- * @param {(code: typeof codes.greaterThan) => State | undefined} close
+ * @param {(code: typeof codes.greaterThan) => State | undefined} ok
  * @param {State} nok
  */
-export function createTagMisc(effects, close, nok) {
+export function factoryTagMisc(effects, ok, nok) {
   return start;
 
   /** @param {typeof codes.exclamationMark | typeof codes.questionMark} code */
@@ -31,7 +31,7 @@ export function createTagMisc(effects, close, nok) {
   /** @type {State} */
   function declaration(code) {
     if (code === codes.greaterThan) {
-      return close(code);
+      return ok(code);
     }
     if (code === codes.eof) {
       return nok;
@@ -56,7 +56,7 @@ export function createTagMisc(effects, close, nok) {
   /** @type {State} */
   function maybeInstructionEnd(code) {
     if (code === codes.greaterThan) {
-      return close(code);
+      return ok(code);
     }
     return instruction(codes.questionMark);
   }

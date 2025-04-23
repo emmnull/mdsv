@@ -11,10 +11,10 @@ import {
 } from 'micromark-util-character';
 import { htmlBlockNames, htmlRawNames } from 'micromark-util-html-tag-name';
 import { codes, constants, types as coreTypes } from 'micromark-util-symbol';
-import { createTagContent } from './tag-content.js';
-import { createTagMatch } from './tag-match.js';
-import { createTagMisc } from './tag-misc.js';
-import { createTagName } from './tag-name.js';
+import { factoryElementContent } from './factory-element-content.js';
+import { factoryTagAttributes } from './factory-tag-attributes.js';
+import { factoryTagMisc } from './factory-tag-misc.js';
+import { factoryTagName } from './factory-tag-name.js';
 
 /** @returns {Extension} */
 export function svelteFlowElement() {
@@ -39,17 +39,11 @@ export function svelteFlowElement() {
   };
 }
 
-/**
- * @returns {HtmlExtension}
- * @todo Implement namespaced tag name for customized elements?
- */
+/** @returns {HtmlExtension} */
 export function htmlSvelteFlowElement() {
   return {
     exit: {
       [types.svelteElementTag](token) {
-        this.raw(this.sliceSerialize(token));
-      },
-      [types.svelteRawData](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -82,15 +76,15 @@ function tokenize(effects, ok, nok) {
 
   /** @type {State} */
   function openingTagStart(code) {
-    if (code === codes.exclamationMark || code === codes.questionMark) {
-      return createTagMisc(effects, openingTagEnd, nok)(code);
-    }
     if (code === codes.slash) {
       return nok;
     }
+    if (code === codes.exclamationMark || code === codes.questionMark) {
+      return factoryTagMisc(effects, openingTagEnd, nok)(code);
+    }
     if (asciiAlpha(code)) {
       effects.enter(types.svelteElementTagName);
-      return createTagName(effects, openingTagNameEnd, nok)(code);
+      return factoryTagName(effects, openingTagNameEnd, nok)(code);
     }
     if (markdownLineEndingOrSpace(code)) {
       return factorySpace(effects, openingTagStart, coreTypes.whitespace)(code);
@@ -113,7 +107,7 @@ function tokenize(effects, ok, nok) {
     if (!isRawTag && !isBlockTag) {
       return nok;
     }
-    return createTagContent(effects, openingTagEnd, nok)(code);
+    return factoryTagAttributes(effects, openingTagEnd, nok)(code);
   }
 
   /** @type {State} */
@@ -136,133 +130,85 @@ function tokenize(effects, ok, nok) {
     if (code === codes.greaterThan) {
       effects.consume(code);
       effects.exit(types.svelteElementTag);
-      if (isRawTag) {
-        effects.enter(types.svelteRawData);
-        return rawData;
-      }
       if (tagName === undefined) {
         // handling misc tags like <! > completed by createTagMisc
-        effects.exit(types.svelteElementTag);
         effects.exit(types.svelteFlowElement);
         return ok;
       }
-      return chunkStart;
+      if (isRawTag) {
+        return factoryElementContent(
+          effects,
+          end,
+          null,
+          tagName,
+          effects.enter(coreTypes.chunkString, {
+            contentType: constants.contentTypeString,
+          }),
+        );
+      }
+      return effects.attempt(
+        {
+          partial: true,
+          tokenize(effects, ok, nok) {
+            return textContentStart;
+
+            /** @type {State} */
+            function textContentStart(code) {
+              assert(tagName !== undefined, 'expected tag name to be defined');
+              return factoryElementContent(
+                effects,
+                afterClose,
+                nok,
+                tagName,
+                effects.enter(coreTypes.chunkContent, {
+                  contentType: constants.contentTypeText,
+                }),
+              )(code);
+            }
+
+            /** @type {State} */
+            function afterClose(code) {
+              if (code === codes.eof || markdownLineEnding(code)) {
+                // file or line ended without trailing content
+                // consider content as text instead of flow
+                // but also consider element as flow container
+                return ok;
+              }
+              if (markdownSpace(code)) {
+                // accept trailing spaces
+                effects.consume(code);
+                return afterClose;
+              }
+              // content found after the closing tag
+              // element should be handled as a text element
+              // and wrapped in a <p> alongside the subsequent content
+              return nok;
+            }
+          },
+        },
+        end,
+        flowContentStart,
+      )(code);
     }
     return nok;
   }
 
   /** @type {State} */
-  function rawData(code) {
-    if (code === codes.eof) {
-      effects.exit(types.svelteRawData);
-      effects.exit(types.svelteFlowElement);
-      return ok;
-    }
-    if (code === codes.lessThan) {
-      return effects.attempt(
-        {
-          partial: true,
-          tokenize(effects, ok, nok) {
-            return function (code) {
-              assert(
-                tagName !== undefined,
-                'expected tagName to be defined to close raw',
-              );
-              effects.exit(types.svelteRawData);
-              return createTagMatch(tagName, effects, ok, nok)(code);
-            };
-          },
-        },
-        finishFlow,
-        rawChar,
-      )(code);
-    }
-    return rawChar(code);
+  function flowContentStart(code) {
+    assert(tagName !== undefined, 'expected tag name to be defined');
+    return factoryElementContent(
+      effects,
+      end,
+      flowContentStart,
+      tagName,
+      effects.enter(coreTypes.chunkContent, {
+        contentType: constants.contentTypeFlow,
+      }),
+    )(code);
   }
 
   /** @type {State} */
-  function rawChar(code) {
-    effects.consume(code);
-    return rawData;
-  }
-
-  /** @type {State} */
-  function chunkStart(code) {
-    if (code === codes.eof) {
-      effects.exit(types.svelteFlowElement);
-      return ok;
-    }
-    if (code === codes.lessThan) {
-      return effects.attempt(
-        {
-          partial: true,
-          tokenize(effects, ok, nok) {
-            return function (code) {
-              assert(
-                tagName !== undefined,
-                'expected tagName to be defined to close chunk',
-              );
-              return createTagMatch(tagName, effects, ok, nok)(code);
-            };
-          },
-        },
-        finishFlow,
-        chunkLineStart,
-      )(code);
-    }
-    return chunkLineStart(code);
-  }
-
-  /** @type {State} */
-  function chunkLineStart(code) {
-    effects.enter(coreTypes.chunkContent, {
-      contentType: constants.contentTypeFlow,
-    });
-    return chunkLine(code);
-  }
-
-  /** @type {State} */
-  function chunkLine(code) {
-    if (code === codes.eof) {
-      effects.exit(coreTypes.chunkContent);
-      effects.exit(types.svelteFlowElement);
-      return ok;
-    }
-    if (markdownLineEnding(code)) {
-      effects.exit(coreTypes.chunkContent);
-      effects.consume(code);
-      return chunkStart;
-    }
-    if (code === codes.lessThan) {
-      return effects.attempt(
-        {
-          partial: true,
-          tokenize(effects, ok, nok) {
-            return function (code) {
-              assert(
-                tagName !== undefined,
-                'expected tagName to be defined to close chunk',
-              );
-              effects.exit(coreTypes.chunkContent);
-              return createTagMatch(tagName, effects, ok, nok)(code);
-            };
-          },
-        },
-        finishFlow,
-        chunkChar,
-      );
-    }
-    return chunkChar(code);
-  }
-
-  /** @type {State} */
-  function chunkChar(code) {
-    effects.consume(code);
-    return chunkLine;
-  }
-
-  /** @type {State} */
-  function finishFlow() {
+  function end(code) {
     effects.exit(types.svelteFlowElement);
     return ok;
   }

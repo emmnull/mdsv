@@ -1,3 +1,12 @@
+//
+//
+//
+// To do:
+// Move into svelte-element extension
+//
+//
+//
+
 /** @import {Extension, HtmlExtension, Token} from 'micromark-util-types' */
 import { types as coreTypes } from 'micromark-util-symbol';
 
