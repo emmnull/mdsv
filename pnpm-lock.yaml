@@ -105,6 +105,9 @@ importers:
       common:
         specifier: workspace:^
         version: link:../common
+      micromark-core-commonmark:
+        specifier: ^2.0.3
+        version: 2.0.3
       micromark-factory-space:
         specifier: ^2.0.1
         version: 2.0.1
