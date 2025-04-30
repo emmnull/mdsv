@@ -1,13 +1,13 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlSvelte, svelte } from '../index.js';
+import { htmlMdsv, mdsv } from '../index.js';
 
 describe.skip('micromark extension tokenizes svelte syntax in markdown', () => {
   /** @type {import('micromark-util-types').Options} */
   const options = {
-    extensions: [svelte()],
-    htmlExtensions: [htmlSvelte()],
+    extensions: [mdsv()],
+    htmlExtensions: [htmlMdsv()],
     allowDangerousHtml: true,
   };
 

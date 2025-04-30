@@ -1,5 +1,5 @@
 {
-  "name": "micromark-extension-svelte",
+  "name": "micromark-extension-mdsv",
   "version": "0.0.0-dev",
   "description": "Tokenize and serialize svelte syntax inside markdown",
   "keywords": [

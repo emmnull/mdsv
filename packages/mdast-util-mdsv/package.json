@@ -1,0 +1,25 @@
+{
+  "name": "mdast-util-mdsv",
+  "version": "0.0.0-dev",
+  "description": "Utilities for svelte nodes inside Unified markdown AST",
+  "keywords": [
+    "markdown",
+    "svelte",
+    "ast",
+    "mdast",
+    "unified"
+  ],
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "node --test --watch",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "common": "workspace:^"
+  }
+}

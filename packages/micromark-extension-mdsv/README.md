@@ -4,7 +4,7 @@
     <source media="(prefers-color-scheme: dark)" srcset="../../logo-dark.svg">
     <img align="center" alt="Mdsv logo" src="../../logo-light.svg" width="100%" height="auto">
   </picture>
-  <p>micromark-extension-svelte</p>
+  <p><code>micromark-extension-mdsv</code></p>
 </h1>
 
 Support parsing and tokenizing Svelte-related syntaxes in markdown content.

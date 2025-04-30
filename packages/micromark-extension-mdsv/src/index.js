@@ -14,7 +14,7 @@ import { htmlSvelteTag, svelteTag } from './lib/svelte-tag.js';
 import { svelteText } from './lib/svelte-text.js';
 
 /** @returns {Extension} */
-export function svelte() {
+export function mdsv() {
   return combineExtensions([
     svelteExpression(),
     svelteTag(),
@@ -25,7 +25,7 @@ export function svelte() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlSvelte() {
+export function htmlMdsv() {
   return combineHtmlExtensions([
     htmlSvelteExpression(),
     htmlSvelteTag(),
