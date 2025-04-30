@@ -1,29 +1,36 @@
 /** @import {Options} from 'micromark-util-types' */
 
 import { micromark } from 'micromark';
+import {
+  combineExtensions,
+  combineHtmlExtensions,
+} from 'micromark-util-combine-extensions';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlSvelteElement, svelteElement } from '../lib/svelte-element.js';
+import { htmlSvelteFlow, svelteFlow } from '../lib/svelte-flow.js';
+import { htmlSvelteText, svelteText } from '../lib/svelte-text.js';
 
 /** @type {Options} */
 const options = {
-  extensions: [svelteElement()],
-  htmlExtensions: [htmlSvelteElement()],
+  extensions: [combineExtensions([svelteFlow(), svelteText()])],
+  htmlExtensions: [combineHtmlExtensions([htmlSvelteFlow(), htmlSvelteText()])],
   allowDangerousHtml: true,
 };
 
 describe('svelteElement micromark extesion processes elements and components syntax', () => {
-  it.skip('tokenizes standalone self-closing and void elements as flow', () => {
+  it('tokenizes standalone self-closing and void elements as flow', () => {
+    strictEqual(micromark('<FooBar />', options), '<FooBar />');
+
     strictEqual(
       micromark(
-        '<FooBar use:directive {...spread} class="a {b}" style={c} />',
+        '<FooBar use:action {...spread} {shorthand} class="a {b}" style={c} />',
         options,
       ),
-      '<FooBar use:directive {...spread} class="a {b}" style={c}  />',
+      '<FooBar use:action {...spread} {shorthand} class="a {b}" style={c} />',
     );
   });
 
-  it.skip('tokenizes inline elements as text', () => {
+  it('tokenizes inline elements as text', () => {
     strictEqual(
       micromark('Have a pint <FooBarA />', options),
       '<p>Have a pint <FooBarA /></p>',
@@ -59,31 +66,38 @@ describe('svelteElement micromark extesion processes elements and components syn
       '<FooBarF>\n<strong>Some more bold</strong>\n</FooBarF>',
     );
 
-    // strictEqual(
-    //   micromark('<FooBarG>\n# This is not a heading\n</FooBarG>', options),
-    //   '<FooBarG>\n# This is not a heading\n</FooBarG>',
-    // );
+    strictEqual(
+      micromark('<FooBarG>\n# This is not a heading\n</FooBarG>', options),
+      '<FooBarG>\n# This is not a heading\n</FooBarG>',
+    );
 
-    // strictEqual(
-    //   micromark('<FooBarH>\n\nI like turtles\n\n</FooBarH>', options),
-    //   '<FooBarH>\n<p>I like turtles</p>\n</FooBarH>',
-    // );
+    strictEqual(
+      micromark('<FooBarH>\n\nI like turtles\n\n</FooBarH>', options),
+      '<FooBarH>\n<p>I like turtles</p>\n</FooBarH>',
+    );
 
-    // strictEqual(
-    //   micromark('<FooBarI>\n\n# This is a heading\n\n</FooBarI>', options),
-    //   '<FooBarI>\n<h1>This is a heading</h1>\n</FooBarI>',
-    // );
+    strictEqual(
+      micromark('<FooBarI>\n\n# This is a heading\n\n</FooBarI>', options),
+      '<FooBarI>\n<h1>This is a heading</h1>\n</FooBarI>',
+    );
 
-    // strictEqual(
-    //   micromark('<FooBarJ>\n\n**Dat beat is faaat**\n\n</FooBarJ>', options),
-    //   '<FooBarJ>\n<p><strong>Dat beat is faaat</strong>\n</p></FooBarJ>',
-    // );
+    strictEqual(
+      micromark('<FooBarJ>\n\n**Dat beat is faaat**\n\n</FooBarJ>', options),
+      '<FooBarJ>\n<p><strong>Dat beat is faaat</strong></p>\n</FooBarJ>',
+    );
   });
 
-  it.skip('tokenizes nested flow tags', () => {
+  it('tokenizes nested text tags', () => {
     strictEqual(
       micromark('<Foo><Bar>Hi mom</Bar></Foo>', options),
-      '<Foo>\n<Bar>\nHi mom</Bar></Foo>',
+      '<p><Foo><Bar>Hi mom</Bar></Foo></p>',
+    );
+  });
+
+  it('tokenizes nested flow tags', () => {
+    strictEqual(
+      micromark('<Foo>\n<Bar>Hi mom</Bar>\n</Foo>', options),
+      '<Foo>\n<Bar>Hi mom</Bar>\n</Foo>',
     );
   });
 });

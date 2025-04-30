@@ -1,22 +1,24 @@
 /** @import {Code, Construct, Extension, HtmlExtension, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
 
-import { htmlVoidNames, types } from 'common/constants';
+import { types } from 'common/constants';
 import { assert } from 'common/utils';
-import { markdownLineEndingOrSpace } from 'micromark-util-character';
+import { factorySpace } from 'micromark-factory-space';
+import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { htmlRawNames } from 'micromark-util-html-tag-name';
-import { codes } from 'micromark-util-symbol';
+import { codes, types as coreTypes } from 'micromark-util-symbol';
 import { factoryElementMisc } from './utils/element-misc.js';
 import { factoryTagAttributes } from './utils/element-tag-attributes.js';
 import { tagNameChar, tagNameStartChar } from './utils/element-tag-name.js';
 
 /** @returns {Extension} */
-export function svelteTextElement() {
+export function svelteText() {
   return {
     disable: {
       null: ['htmlText', 'autolink'],
     },
     text: {
       [codes.lessThan]: {
+        concrete: true,
         name: types.svelteText,
         tokenize: tokenizeSvelteTextElement,
       },
@@ -25,7 +27,7 @@ export function svelteTextElement() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlSvelteTextElement() {
+export function htmlSvelteText() {
   return {
     enter: {
       [types.svelteTextTag](token) {
@@ -37,50 +39,43 @@ export function htmlSvelteTextElement() {
 
 /** @type {Tokenizer} */
 function tokenizeSvelteTextElement(effects, ok, nok) {
-  const self = this;
-  const stack = this.svelteElementStack || (this.svelteElementStack = []);
   /** @type {string} */
   let name;
   /** @type {boolean} */
-  let isClosingTag;
-  /** @type {boolean} */
   let isRawTag;
+  /** @type {boolean} */
+  let isClosingTag;
+
+  const self = this;
 
   return start;
 
   /**
-   * Start of HTML (text).
-   *
    * ```markdown
-   * > | a <b> c
-   *       ^
+   * > | jello <
+   *           ^
    * ```
    *
    * @type {State}
    */
   function start(code) {
     assert(code === codes.lessThan, 'expected `<`');
-    effects.enter(types.svelteText);
     effects.enter(types.svelteTextTag);
+    effects.enter(types.svelteTextTagMarker);
     effects.consume(code);
-    return afterStart;
+    effects.exit(types.svelteTextTagMarker);
+    return startAfter;
   }
 
   /**
-   * After `<`, at tag name or other stuff.
-   *
    * ```markdown
-   * > | a <b> c
-   *        ^
-   * > | a <!doctype> c
-   *        ^
-   * > | a <!--b--> c
-   *        ^
+   * > | jello <
+   *            ^
    * ```
    *
    * @type {State}
    */
-  function afterStart(code) {
+  function startAfter(code) {
     if (code === codes.exclamationMark || code === codes.questionMark) {
       return factoryElementMisc.call(self, effects, end, nok);
     }
@@ -92,85 +87,113 @@ function tokenizeSvelteTextElement(effects, ok, nok) {
     return tagNameStart(code);
   }
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   * > | jello <x
+   *            ^
+   * ```
+   *
+   * @type {State}
+   */
   function tagNameStart(code) {
     if (tagNameStartChar(code)) {
-      effects.enter(types.svelteFlowTagName);
+      effects.enter(types.svelteTextTagName);
       effects.consume(code);
       name = String.fromCharCode(code);
       return tagName;
     }
-    if (markdownLineEndingOrSpace(code)) {
+    if (markdownSpace(code)) {
+      return factorySpace(effects, tagNameStart, coreTypes.whitespace)(code);
+    }
+    if (markdownLineEnding(code)) {
       effects.consume(code);
       return tagNameStart;
     }
     return nok(code);
   }
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   * > | jello <xy
+   *             ^
+   * ```
+   *
+   * @type {State}
+   */
   function tagName(code) {
     if (tagNameChar(code)) {
       effects.consume(code);
       name += String.fromCharCode(code);
       return tagName;
     }
-    effects.exit(types.svelteFlowTagName);
+    effects.exit(types.svelteTextTagName);
     isRawTag = htmlRawNames.includes(name);
-    return afterTagName(code);
+    return tagNameAfter(code);
   }
 
-  /** @type {State} */
-  function afterTagName(code) {
+  /**
+   * ```markdown
+   * > | jello <xyz
+   *               ^
+   * ```
+   *
+   * @type {State}
+   */
+  function tagNameAfter(code) {
     if (code === codes.eof) {
-      return nok(code);
+      effects.exit(types.svelteTextTag);
+      return ok(code);
     }
-    if (markdownLineEndingOrSpace(code)) {
-      effects.consume(code);
-      return afterTagName;
+    if (markdownSpace(code)) {
+      return factorySpace(effects, tagNameAfter, coreTypes.whitespace)(code);
     }
-    if (isClosingTag) {
-      // closing tag, with slash before name
-      return end(code);
-    }
-    if (code === codes.slash && !isClosingTag) {
-      // self-closing tag, with slash after name
-      isClosingTag = true;
+    if (code === codes.slash) {
       effects.consume(code);
       return end;
     }
     if (code === codes.greaterThan) {
-      end(code);
+      return end(code);
     }
     return factoryTagAttributes(
       effects,
-      maybeSelfClose,
+      attributesAfter,
       nok,
-      types.svelteFlowTagAttribute,
+      types.svelteTextTagAttribute,
     )(code);
   }
 
-  /** @type {State} */
-  function maybeSelfClose(code) {
+  /**
+   * ```markdown
+   * > | jello <xyz .../
+   *                   ^
+   * > | jello <xyz ...>
+   *                   ^
+   * ```
+   *
+   * @type {State}
+   */
+  function attributesAfter(code) {
     if (code === codes.slash) {
-      isClosingTag = true;
       effects.consume(code);
       return end;
     }
     return end(code);
   }
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   * > | jello <...>
+   *               ^
+   * ```
+   *
+   * @type {State}
+   */
   function end(code) {
     if (code === codes.greaterThan) {
+      effects.enter(types.svelteTextTagMarker);
       effects.consume(code);
+      effects.exit(types.svelteTextTagMarker);
       effects.exit(types.svelteTextTag);
-      isClosingTag ||= htmlVoidNames.includes(name);
-      if (isClosingTag) {
-        if (stack[stack.length - 1] === name) {
-          effects.exit(types.svelteText);
-          stack.pop();
-        }
-      }
       return ok(code);
     }
     return nok(code);
