@@ -1,4 +1,4 @@
-/** @import {State, Tokenizer, Extension, HtmlExtension} from 'micromark-util-types' */
+/** @import {Extension, HtmlExtension} from 'micromark-util-types' */
 
 import {
   combineExtensions,
@@ -9,18 +9,28 @@ import {
   htmlSvelteExpression,
   svelteExpression,
 } from './lib/svelte-expression.js';
+import { htmlSvelteFlow, svelteFlow } from './lib/svelte-flow.js';
 import { htmlSvelteTag, svelteTag } from './lib/svelte-tag.js';
+import { svelteText } from './lib/svelte-text.js';
 
 /** @returns {Extension} */
 export function svelte() {
-  return combineExtensions([svelteBlock(), svelteTag(), svelteExpression()]);
+  return combineExtensions([
+    svelteExpression(),
+    svelteTag(),
+    svelteBlock(),
+    svelteFlow(),
+    svelteText(),
+  ]);
 }
 
 /** @returns {HtmlExtension} */
 export function htmlSvelte() {
   return combineHtmlExtensions([
-    htmlSvelteBlock(),
-    htmlSvelteTag(),
     htmlSvelteExpression(),
+    htmlSvelteTag(),
+    htmlSvelteBlock(),
+    htmlSvelteFlow(),
+    htmlSvelteTag(),
   ]);
 }

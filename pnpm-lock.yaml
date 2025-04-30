@@ -130,7 +130,17 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
 
-  packages/remark-svelte: {}
+  packages/remark-svelte:
+    devDependencies:
+      common:
+        specifier: workspace:^
+        version: link:../common
+      micromark-extension-frontmatter:
+        specifier: ^2.0.0
+        version: 2.0.0
+      micromark-extension-svelte:
+        specifier: workspace:^
+        version: link:../micromark-extension-svelte
 
   packages/svelte-preprocess-markdown:
     devDependencies:

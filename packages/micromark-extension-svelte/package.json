@@ -1,13 +1,13 @@
 {
   "name": "micromark-extension-svelte",
   "version": "0.0.0-dev",
-  "description": "Micromark extensions for svelte syntax inside markdown",
+  "description": "Tokenize and serialize svelte syntax inside markdown",
   "keywords": [
     "markdown",
     "svelte",
     "micromark",
     "unified",
-    "tokens"
+    "extension"
   ],
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",

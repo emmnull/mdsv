@@ -1,14 +1,27 @@
 {
-  "name": "remark-mdsvelte",
-  "version": "1.0.0",
+  "name": "remark-svelte",
+  "version": "0.0.0-dev",
   "description": "",
-  "keywords": [],
-  "license": "ISC",
-  "author": "",
-  "main": "index.js",
+  "keywords": [
+    "markdown",
+    "svelte",
+    "remark",
+    "unified",
+    "plugin"
+  ],
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "node --test --watch",
     "test": "node --test"
   },
-  "packageManager": "pnpm@10.6.5"
+  "devDependencies": {
+    "common": "workspace:^",
+    "micromark-extension-frontmatter": "^2.0.0",
+    "micromark-extension-svelte": "workspace:^"
+  }
 }

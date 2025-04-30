@@ -1,6 +1,6 @@
 /**
  * @import {Options as ToMarkdownExtension} from 'mdast-util-to-markdown';
- * @import {Processor, Transformer} from 'unified';
+ * @import {Processor} from 'unified';
  */
 
 import {
@@ -11,15 +11,9 @@ import { gfmFromMarkdown, gfmToMarkdown } from 'mdast-util-gfm';
 import { frontmatter } from 'micromark-extension-frontmatter';
 import { gfm } from 'micromark-extension-gfm';
 import { mdxMd } from 'micromark-extension-mdx-md';
-import { frontmatter_options } from './constants';
-import { svelteFromMarkdown, svelteToMarkdown } from './mdast-util-svelte';
-import { svelte } from './micromark-extension-svelte';
-
-// import { mdxJsxFromMarkdown, mdxJsxToMarkdown } from 'mdast-util-mdx-jsx';
-// import { mdxJsx } from 'micromark-extension-mdx-jsx';
 
 /** @this {Processor} */
-export default function () {
+export default function remarkSvelte() {
   const data = this.data();
   const micromarkExtensions =
     data.micromarkExtensions || (data.micromarkExtensions = []);
