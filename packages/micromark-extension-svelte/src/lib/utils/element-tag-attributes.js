@@ -100,6 +100,7 @@ export function factoryTagAttributes(effects, ok, nok, type) {
       return factoryPlainExpression(effects, attributeBraceEnd, nok);
     }
     effects.consume(code);
+    return attribute;
   }
 
   /**
