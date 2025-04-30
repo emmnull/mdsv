@@ -6,9 +6,5 @@
   "type": "module",
   "exports": {
     ".": "./src/index.js"
-  },
-  "scripts": {
-    "build": "tsc --build --clean && tsc --build",
-    "dev": "tsc --build --watch"
   }
 }
