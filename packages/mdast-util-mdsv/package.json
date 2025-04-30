@@ -19,7 +19,5 @@
     "dev": "node --test --watch",
     "test": "node --test"
   },
-  "devDependencies": {
-    "common": "workspace:^"
-  }
+  "devDependencies": {}
 }

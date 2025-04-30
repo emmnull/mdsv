@@ -1,0 +1,14 @@
+{
+  "name": "@mdsv/utils",
+  "version": "0.0.0-dev",
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build",
+    "dev": "tsc --build --watch"
+  }
+}

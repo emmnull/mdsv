@@ -1,7 +1,7 @@
 /** @import {Code, Construct, Extension, HtmlExtension, Resolver, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
 
-import { htmlVoidNames, types } from 'common/constants';
-import { assert } from 'common/utils';
+import { htmlVoidNames, types } from '@mdsv/constants';
+import { assert } from '@mdsv/utils';
 import { blankLine } from 'micromark-core-commonmark';
 import { factorySpace } from 'micromark-factory-space';
 import {

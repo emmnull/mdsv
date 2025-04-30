@@ -1,7 +1,7 @@
 /** @import {Code, Construct, Extension, HtmlExtension, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
 
-import { types } from 'common/constants';
-import { assert } from 'common/utils';
+import { types } from '@mdsv/constants';
+import { assert } from '@mdsv/utils';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { htmlRawNames } from 'micromark-util-html-tag-name';

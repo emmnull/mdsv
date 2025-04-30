@@ -3,11 +3,7 @@
  * @import {Options as ToMarkdownExtension, State} from 'mdast-util-to-markdown'
  */
 
-import {
-  frontmatter_parsers,
-  frontmatter_types,
-  types,
-} from 'common/constants';
+import { frontmatter_parsers, frontmatter_types, types } from '@mdsv/constants';
 
 /** @returns {FromMarkdownExtension} */
 export function svelteFromMarkdown() {

@@ -1,7 +1,7 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension, Token} from 'micromark-util-types' */
 
-import { types } from 'common/constants';
-import { assert } from 'common/utils';
+import { types } from '@mdsv/constants';
+import { assert } from '@mdsv/utils';
 import {
   asciiAlpha,
   asciiAlphanumeric,

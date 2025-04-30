@@ -1,4 +1,4 @@
-import { types } from 'common/constants';
+import { types } from '@mdsv/constants';
 import 'micromark-util-types';
 import { Token } from 'micromark-util-types';
 

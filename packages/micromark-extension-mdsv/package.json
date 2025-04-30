@@ -16,11 +16,14 @@
     "dist"
   ],
   "scripts": {
+    "build": "tsc --build --clean && tsc --build",
     "dev": "node --test --watch",
     "test": "node --test"
   },
   "devDependencies": {
-    "common": "workspace:^",
+    "@mdsv/constants": "workspace:^",
+    "@mdsv/utils": "workspace:^",
+    "micromark": "^4.0.2",
     "micromark-core-commonmark": "^2.0.3",
     "micromark-factory-space": "^2.0.1",
     "micromark-util-character": "^2.1.1",

@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../common" }]
+  "references": [{ "path": "../constants" }, { "path": "../utils" }],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test"]
 }
