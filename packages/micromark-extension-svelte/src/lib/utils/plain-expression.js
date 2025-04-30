@@ -37,21 +37,38 @@ function getClosingBracket(code) {
 
 /**
  * Consume contents of a svelte or js expression to be terminated by a closing
- * brace (`}`).
+ * curly brace.
  *
  * Use **after** encountering and consuming an expression-opening marker
  * (typically `{` or `${` depending on the semantic context). See calling
  * tokenizer for ok and nok state details.
  *
- * @param {Effects} effects - Micromark effects context.
- * @param {(brace: typeof codes.rightCurlyBrace) => State | undefined} ok -
- *   State to transition to after reaching closing brace.
- * @param {State} nok - State to transition to on error.
- * @returns {State} - The initial state function for the expression consumer.
+ * ```markdown
+ * > | {...}
+ *      ^^^
+ * ```
+ *
+ * @param {Effects} effects
+ * @param {(brace: typeof codes.rightCurlyBrace) => State | undefined} ok
+ * @param {State} nok
  */
 export function factoryPlainExpression(effects, ok, nok) {
-  const brackets = /** @type {NonNullable<Code>[]} */ ([]);
-  const regexBrackets = /** @type {NonNullable<Code>[]} */ ([]);
+  /**
+   * @type {(
+   *   | typeof codes.leftCurlyBrace
+   *   | typeof codes.leftParenthesis
+   *   | typeof codes.leftSquareBracket
+   * )[]}
+   */
+  const brackets = [];
+  /**
+   * @type {(
+   *   | typeof codes.leftCurlyBrace
+   *   | typeof codes.leftParenthesis
+   *   | typeof codes.leftSquareBracket
+   * )[]}
+   */
+  const regexBrackets = [];
 
   return plainExpression;
 

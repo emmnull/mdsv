@@ -1,7 +1,7 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlSvelteBlock, svelteBlock } from './svelte-block.js';
+import { htmlSvelteBlock, svelteBlock } from '../lib/svelte-block.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {
@@ -20,8 +20,8 @@ describe('micromark extension tokenizes svelte blocks in markdown', () => {
 
   it('tokenizes simple inline blocks', () => {
     strictEqual(
-      micromark('{#if foo}\nHello workd\n{/if}', options),
-      '{#if foo}\n<p>Hello workd</p>\n{/if}',
+      micromark('{#if foo}\nHello world\n{/if}', options),
+      '{#if foo}\n<p>Hello world</p>\n{/if}',
     );
   });
 });

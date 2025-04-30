@@ -7,7 +7,7 @@ type SvelteTokenTypeMap = {
 };
 
 type SvelteTokenizeContext = {
-  // svelteElementStack?: string[];
+  svelteElementStack?: string[];
   // svelteBlockStack?: string[];
 };
 

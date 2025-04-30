@@ -3,14 +3,14 @@
 import { types } from 'common/constants';
 import { assert } from 'common/utils';
 import { codes } from 'micromark-util-symbol';
-import { factoryPlainExpression } from '../factory-plain-expression.js';
+import { factoryPlainExpression } from './utils/plain-expression.js';
 
 /** @returns {Extension} */
 export function svelteExpression() {
   return {
     text: {
       [codes.leftCurlyBrace]: {
-        name: types.svelteExpression,
+        name: types.expression,
         tokenize,
         concrete: true,
       },
@@ -22,31 +22,42 @@ export function svelteExpression() {
 export function htmlSvelteExpression() {
   return {
     exit: {
-      [types.svelteExpression](token) {
+      [types.expression](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
   };
 }
 
-/**
- * @this {TokenizeContext}
- * @type {Tokenizer}
- */
+/** @type {Tokenizer} */
 function tokenize(effects, ok, nok) {
   return start;
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   *  > | {
+   *      ^
+   * ```
+   *
+   * @type {State}
+   */
   function start(code) {
-    assert(code === codes.leftCurlyBrace, 'expected "{"');
-    effects.enter(types.svelteExpression);
-    effects.enter(types.svelteMarker);
+    assert(code === codes.leftCurlyBrace, 'expected `{`');
+    effects.enter(types.expression);
+    effects.enter(types.marker);
     effects.consume(code);
-    effects.exit(types.svelteMarker);
+    effects.exit(types.marker);
     return noTag;
   }
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   *  > | {
+   *       ^
+   * ```
+   *
+   * @type {State}
+   */
   function noTag(code) {
     // bail out on tags and block tags
     if (
@@ -54,20 +65,27 @@ function tokenize(effects, ok, nok) {
       code === codes.numberSign ||
       code === codes.colon
     ) {
-      return nok;
+      return nok(code);
     }
-    effects.enter(types.svelteExpressionValue);
+    effects.enter(types.expressionValue);
     return factoryPlainExpression(effects, end, nok)(code);
   }
 
-  /** @param {typeof codes.rightCurlyBrace} brace */
-  function end(brace) {
-    assert(brace === codes.rightCurlyBrace, 'expected "}"');
-    effects.exit(types.svelteExpressionValue);
-    effects.enter(types.svelteMarker);
-    effects.consume(brace);
-    effects.exit(types.svelteMarker);
-    effects.exit(types.svelteExpression);
-    return ok;
+  /**
+   * ```markdown
+   *  > | {...}
+   *          ^
+   * ```
+   *
+   * @type {State}
+   */
+  function end(code) {
+    assert(code === codes.rightCurlyBrace, 'expected `}`');
+    effects.exit(types.expressionValue);
+    effects.enter(types.marker);
+    effects.consume(code);
+    effects.exit(types.marker);
+    effects.exit(types.expression);
+    return ok(code);
   }
 }

@@ -1,7 +1,7 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlSvelteTag, svelteTag } from './svelte-tag.js';
+import { htmlSvelteTag, svelteTag } from '../lib/svelte-tag.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {

@@ -1,7 +1,10 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlSvelteExpression, svelteExpression } from './svelte-expression.js';
+import {
+  htmlSvelteExpression,
+  svelteExpression,
+} from '../lib/svelte-expression.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {

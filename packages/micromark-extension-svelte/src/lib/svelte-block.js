@@ -9,7 +9,7 @@ import {
   markdownSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
-import { factoryPlainExpression } from '../factory-plain-expression.js';
+import { factoryPlainExpression } from './utils/plain-expression.js';
 
 /** @returns {Extension} */
 export function svelteBlock() {
@@ -19,14 +19,14 @@ export function svelteBlock() {
     },
     flow: {
       [codes.leftCurlyBrace]: {
-        name: types.svelteBlockTag,
+        name: types.blockTag,
         tokenize,
         concrete: true,
       },
     },
     text: {
       [codes.leftCurlyBrace]: {
-        name: types.svelteBlockTag,
+        name: types.blockTag,
         tokenize,
         concrete: true,
       },
@@ -38,7 +38,7 @@ export function svelteBlock() {
 export function htmlSvelteBlock() {
   return {
     exit: {
-      [types.svelteBlockTag](token) {
+      [types.blockTag](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -49,7 +49,6 @@ export function htmlSvelteBlock() {
  * Naive tokenizer only preoccupied with block tags without validating keywords
  * nor attempting to match opening tags with closing tags.
  *
- * @this {TokenizeContext}
  * @type {Tokenizer}
  */
 function tokenize(effects, ok, nok) {
@@ -64,11 +63,11 @@ function tokenize(effects, ok, nok) {
 
   /** @type {State} */
   function start(code) {
-    assert(code === codes.leftCurlyBrace, 'expected "{"');
-    effects.enter(types.svelteBlockTag);
-    effects.enter(types.svelteMarker);
+    assert(code === codes.leftCurlyBrace, 'expected `{`');
+    effects.enter(types.blockTag);
+    effects.enter(types.marker);
     effects.consume(code);
-    effects.exit(types.svelteMarker);
+    effects.exit(types.marker);
     return blockTagMarker;
   }
 
@@ -94,9 +93,9 @@ function tokenize(effects, ok, nok) {
     //   default:
     //     return nok;
     // }
-    effects.enter(types.svelteBlockTagMarker);
+    effects.enter(types.blockTagMarker);
     effects.consume(code);
-    effects.exit(types.svelteBlockTagMarker);
+    effects.exit(types.blockTagMarker);
     return nameStart;
   }
 
@@ -105,7 +104,7 @@ function tokenize(effects, ok, nok) {
     if (code === codes.eof || !asciiAlpha(code)) {
       return nok;
     }
-    effects.enter(types.svelteBlockTagName);
+    effects.enter(types.blockTagName);
     effects.consume(code);
     return name;
   }
@@ -117,7 +116,7 @@ function tokenize(effects, ok, nok) {
       return name;
     }
     // nameToken = effects.exit(types.svelteBlockTagName);
-    effects.exit(types.svelteBlockTagName);
+    effects.exit(types.blockTagName);
     return afterName(code);
   }
 
@@ -133,24 +132,24 @@ function tokenize(effects, ok, nok) {
       effects.consume(code);
       return afterName;
     }
-    effects.enter(types.svelteBlockTagValue);
+    effects.enter(types.blockTagValue);
     return factoryPlainExpression(effects, afterValue, nok)(code);
   }
 
   /** @param {typeof codes.rightCurlyBrace} brace */
   function afterValue(brace) {
-    assert(brace === codes.rightCurlyBrace, 'expected "}"');
-    effects.exit(types.svelteBlockTagValue);
+    assert(brace === codes.rightCurlyBrace, 'expected `}`');
+    effects.exit(types.blockTagValue);
     return end(brace);
   }
 
   /** @param {typeof codes.rightCurlyBrace} brace */
   function end(brace) {
-    assert(brace === codes.rightCurlyBrace, 'expected "}"');
-    effects.enter(types.svelteMarker);
+    assert(brace === codes.rightCurlyBrace, 'expected `}`');
+    effects.enter(types.marker);
     effects.consume(brace);
-    effects.exit(types.svelteMarker);
-    effects.exit(types.svelteBlockTag);
+    effects.exit(types.marker);
+    effects.exit(types.blockTag);
     // assert(
     //   nameToken !== undefined,
     //   'Block tag name token should have been captured.',
