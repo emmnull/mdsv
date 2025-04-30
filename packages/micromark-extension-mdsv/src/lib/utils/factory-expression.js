@@ -52,7 +52,7 @@ function getClosingBracket(code) {
  * @param {(brace: typeof codes.rightCurlyBrace) => State | undefined} ok
  * @param {State} nok
  */
-export function factoryPlainExpression(effects, ok, nok) {
+export function factoryExpression(effects, ok, nok) {
   /**
    * @type {(
    *   | typeof codes.leftCurlyBrace

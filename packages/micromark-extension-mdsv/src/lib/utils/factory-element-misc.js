@@ -1,11 +1,13 @@
-/** @import {Tokenizer, TokenizeContext, State} from 'micromark-util-types' */
+/** @import {Tokenizer, TokenizeContext, State, Effects} from 'micromark-util-types' */
 
 import { codes } from 'micromark-util-symbol';
 
 /**
  * Tokenize html instructions, declarations, and comments.
  *
- * @type {Tokenizer}
+ * @param {Effects} effects
+ * @param {State} ok
+ * @param {State} nok
  */
 export function factoryElementMisc(effects, ok, nok) {
   return start;
@@ -56,7 +58,10 @@ export function factoryElementMisc(effects, ok, nok) {
    *
    * @type {State}
    */
-  function declaration(code) {}
+  function declaration(code) {
+    // TO DO
+    return ok(code);
+  }
 
   /**
    * ```markdown
@@ -82,7 +87,10 @@ export function factoryElementMisc(effects, ok, nok) {
    *
    * @type {State}
    */
-  function comment(code) {}
+  function comment(code) {
+    // TO DO
+    return ok(code);
+  }
 
   /**
    * ```markdown
@@ -93,7 +101,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * @type {State}
    */
   function instructionStart(code) {
-    // to do
+    // TO DO
+    return ok(code);
   }
 
   /**
@@ -105,6 +114,7 @@ export function factoryElementMisc(effects, ok, nok) {
    * @type {State}
    */
   function instruction(code) {
-    // to do
+    // TO DO
+    return ok(code);
   }
 }

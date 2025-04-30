@@ -4,33 +4,28 @@ import {
   combineExtensions,
   combineHtmlExtensions,
 } from 'micromark-util-combine-extensions';
-import { htmlSvelteBlock, svelteBlock } from './lib/svelte-block.js';
-import {
-  htmlSvelteExpression,
-  svelteExpression,
-} from './lib/svelte-expression.js';
-import { htmlSvelteFlow, svelteFlow } from './lib/svelte-flow.js';
-import { htmlSvelteTag, svelteTag } from './lib/svelte-tag.js';
-import { svelteText } from './lib/svelte-text.js';
+import { htmlMdsvBlock, mdsvBlock } from './lib/mdsv-block.js';
+import { htmlMdsvElement, mdsvElement } from './lib/mdsv-element.js';
+import { htmlMdsvExpression, mdsvExpression } from './lib/mdsv-expression.js';
+import { htmlMdsvTag, mdsvTag } from './lib/mdsv-tag.js';
 
 /** @returns {Extension} */
 export function mdsv() {
   return combineExtensions([
-    svelteExpression(),
-    svelteTag(),
-    svelteBlock(),
-    svelteFlow(),
-    svelteText(),
+    mdsvExpression(),
+    mdsvTag(),
+    mdsvBlock(),
+    mdsvElement(),
   ]);
 }
 
 /** @returns {HtmlExtension} */
 export function htmlMdsv() {
   return combineHtmlExtensions([
-    htmlSvelteExpression(),
-    htmlSvelteTag(),
-    htmlSvelteBlock(),
-    htmlSvelteFlow(),
-    htmlSvelteTag(),
+    htmlMdsvExpression(),
+    htmlMdsvTag(),
+    htmlMdsvBlock(),
+    htmlMdsvElement(),
+    htmlMdsvTag(),
   ]);
 }

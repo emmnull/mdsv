@@ -1,15 +1,12 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import {
-  htmlSvelteExpression,
-  svelteExpression,
-} from '../lib/svelte-expression.js';
+import { htmlMdsvExpression, mdsvExpression } from '../lib/mdsv-expression.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {
-  extensions: [svelteExpression()],
-  htmlExtensions: [htmlSvelteExpression()],
+  extensions: [mdsvExpression()],
+  htmlExtensions: [htmlMdsvExpression()],
   allowDangerousHtml: true,
 };
 

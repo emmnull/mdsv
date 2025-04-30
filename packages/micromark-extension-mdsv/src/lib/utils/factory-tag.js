@@ -1,6 +1,5 @@
-/** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
+/** @import {Effects,State, TokenType} from 'micromark-util-types' */
 
-import { types } from '@mdsv/constants';
 import { assert } from '@mdsv/utils';
 import {
   asciiAlpha,
@@ -9,41 +8,28 @@ import {
   markdownSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
-import { factoryPlainExpression } from './utils/plain-expression.js';
+import { factoryExpression } from './factory-expression.js';
 
-/** @returns {Extension} */
-export function svelteTag() {
-  return {
-    flow: {
-      [codes.leftCurlyBrace]: {
-        name: types.tag,
-        tokenize,
-        concrete: true,
-      },
-    },
-    text: {
-      [codes.leftCurlyBrace]: {
-        name: types.tag,
-        tokenize,
-        concrete: true,
-      },
-    },
-  };
-}
-
-/** @returns {HtmlExtension} */
-export function htmlSvelteTag() {
-  return {
-    exit: {
-      [types.tag](token) {
-        this.raw(this.sliceSerialize(token));
-      },
-    },
-  };
-}
-
-/** @type {Tokenizer} */
-function tokenize(effects, ok, nok) {
+/**
+ * @param {Effects} effects
+ * @param {State} ok
+ * @param {State} nok
+ * @param {TokenType} tagType
+ * @param {TokenType} markerType
+ * @param {TokenType} tagMarkerType
+ * @param {TokenType} tagNameType
+ * @param {TokenType} tagValueType
+ */
+export function factoryTag(
+  effects,
+  ok,
+  nok,
+  tagType,
+  markerType,
+  tagMarkerType,
+  tagNameType,
+  tagValueType,
+) {
   return start;
 
   /**
@@ -56,10 +42,10 @@ function tokenize(effects, ok, nok) {
    */
   function start(code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
-    effects.enter(types.tag);
-    effects.enter(types.marker);
+    effects.enter(tagType);
+    effects.enter(markerType);
     effects.consume(code);
-    effects.exit(types.marker);
+    effects.exit(markerType);
     return tagMarker;
   }
 
@@ -75,9 +61,9 @@ function tokenize(effects, ok, nok) {
     if (code !== codes.atSign) {
       return nok(code);
     }
-    effects.enter(types.tagMarker);
+    effects.enter(tagMarkerType);
     effects.consume(code);
-    effects.exit(types.tagMarker);
+    effects.exit(tagMarkerType);
     return nameStart;
   }
 
@@ -90,12 +76,12 @@ function tokenize(effects, ok, nok) {
    * @type {State}
    */
   function nameStart(code) {
-    if (code === codes.eof || !asciiAlpha(code)) {
-      return nok(code);
+    if (asciiAlpha(code)) {
+      effects.enter(tagNameType);
+      effects.consume(code);
+      return name;
     }
-    effects.enter(types.tagName);
-    effects.consume(code);
-    return name;
+    return nok(code);
   }
 
   /**
@@ -111,7 +97,7 @@ function tokenize(effects, ok, nok) {
       effects.consume(code);
       return name;
     }
-    effects.exit(types.tagName);
+    effects.exit(tagNameType);
     return afterName(code);
   }
 
@@ -134,8 +120,8 @@ function tokenize(effects, ok, nok) {
       effects.consume(code);
       return afterName;
     }
-    effects.enter(types.tagValue);
-    return factoryPlainExpression(effects, afterValue, nok)(code);
+    effects.enter(tagValueType);
+    return factoryExpression(effects, afterValue, nok)(code);
   }
 
   /**
@@ -148,7 +134,7 @@ function tokenize(effects, ok, nok) {
    */
   function afterValue(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
-    effects.exit(types.tagValue);
+    effects.exit(tagValueType);
     return end(code);
   }
 
@@ -164,10 +150,10 @@ function tokenize(effects, ok, nok) {
    */
   function end(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
-    effects.enter(types.marker);
+    effects.enter(markerType);
     effects.consume(code);
-    effects.exit(types.marker);
-    effects.exit(types.tag);
-    return ok(code);
+    effects.exit(markerType);
+    effects.exit(tagType);
+    return ok;
   }
 }

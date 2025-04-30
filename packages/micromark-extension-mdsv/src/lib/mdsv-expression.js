@@ -3,10 +3,10 @@
 import { types } from '@mdsv/constants';
 import { assert } from '@mdsv/utils';
 import { codes } from 'micromark-util-symbol';
-import { factoryPlainExpression } from './utils/plain-expression.js';
+import { factoryExpression } from './utils/factory-expression.js';
 
 /** @returns {Extension} */
-export function svelteExpression() {
+export function mdsvExpression() {
   return {
     text: {
       [codes.leftCurlyBrace]: {
@@ -19,7 +19,7 @@ export function svelteExpression() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlSvelteExpression() {
+export function htmlMdsvExpression() {
   return {
     exit: {
       [types.expression](token) {
@@ -68,7 +68,7 @@ function tokenize(effects, ok, nok) {
       return nok(code);
     }
     effects.enter(types.expressionValue);
-    return factoryPlainExpression(effects, end, nok)(code);
+    return factoryExpression(effects, end, nok)(code);
   }
 
   /**

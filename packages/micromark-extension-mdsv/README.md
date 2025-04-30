@@ -9,22 +9,22 @@
 
 Support parsing and tokenizing Svelte-related syntaxes in markdown content.
 
-## Svelte Expression
+## Expression
 
 `{...}`
 
-## Svelte Tag
+## Tag
 
 `{@...}`
 
-## Svelte Block
+## Block
 
 `{#...}`, `{:...}`, `{/...}`
 
 > [!NOTE]
 > Indented code syntax is disabled by this extension, so you can safely indent block content as you would in a normal svelte file.
 
-## Svelte Element
+## Element
 
 `<element />`, `<foo.bar />`, `<FooBar/>`, `<foo:bar>`
 
@@ -33,7 +33,7 @@ With components, the heuristics around how markup should contain flow or text co
 > [!NOTE]
 > Indented code syntax is disabled by this extension, so you can safely indent element content as you would in a normal svelte file.
 
-### Svelte Flow
+### Element Flow
 
 ```md
 <Foo {...props} use:baz class="a {b}" data-c={c}>
@@ -59,7 +59,7 @@ With components, the heuristics around how markup should contain flow or text co
 </Bar>
 ```
 
-### Svelte Text
+### Element Text
 
 ```md
 <Foo {...props} use:baz class="a {b}" data-c={c}>**Hi mom**</Foo>

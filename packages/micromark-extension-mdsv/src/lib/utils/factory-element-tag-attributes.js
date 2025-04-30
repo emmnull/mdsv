@@ -6,7 +6,7 @@ import {
   markdownLineEndingOrSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
-import { factoryPlainExpression } from './plain-expression.js';
+import { factoryExpression } from './factory-expression.js';
 
 /**
  * Creates a state machine for parsing tag content (attributes, directives,
@@ -26,7 +26,7 @@ import { factoryPlainExpression } from './plain-expression.js';
  * @param {State} nok State transitioned to if invalid syntax.
  * @param {TokenType} type
  */
-export function factoryTagAttributes(effects, ok, nok, type) {
+export function factoryElementTagAttributes(effects, ok, nok, type) {
   /**
    * @type {typeof codes.apostrophe
    *   | typeof codes.quotationMark
@@ -97,7 +97,7 @@ export function factoryTagAttributes(effects, ok, nok, type) {
     }
     if (code === codes.leftCurlyBrace) {
       effects.consume(code);
-      return factoryPlainExpression(effects, attributeBraceEnd, nok);
+      return factoryExpression(effects, attributeBraceEnd, nok);
     }
     effects.consume(code);
     return attribute;
@@ -170,7 +170,7 @@ export function factoryTagAttributes(effects, ok, nok, type) {
       return nok(code);
     }
     if (code === codes.leftCurlyBrace) {
-      return factoryPlainExpression(effects, attributeQuoteBraceEnd, nok)(code);
+      return factoryExpression(effects, attributeQuoteBraceEnd, nok)(code);
     }
     effects.consume(code);
     return attributeQuote;
