@@ -1,6 +1,6 @@
 /** @import {Code, Construct, Extension, HtmlExtension, Resolver, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
 
-import { types } from '@mdsv/constants';
+import { constructs, types } from '@mdsv/constants';
 import { assert } from '@mdsv/utils';
 import { blankLine } from 'micromark-core-commonmark';
 import { factorySpace } from 'micromark-factory-space';
@@ -16,8 +16,8 @@ export function mdsvElement() {
     },
     flow: {
       [codes.lessThan]: {
-        name: types.elementFlow,
         concrete: true,
+        name: constructs.elementFlow,
         tokenize: tokenizeElementFlow,
         // resolveTo,
       },
@@ -25,7 +25,7 @@ export function mdsvElement() {
     text: {
       [codes.lessThan]: {
         concrete: true,
-        name: types.elementText,
+        name: constructs.elementText,
         tokenize: tokenizeElementText,
       },
     },

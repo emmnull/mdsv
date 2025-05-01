@@ -26,7 +26,7 @@ Support parsing and tokenizing Svelte-related syntaxes in markdown content.
 
 ## Element
 
-`<element />`, `<foo.bar />`, `<FooBar/>`, `<foo:bar>`
+`<element>`, `<foo.bar>`, `<FooBar>`, `<foo-bar>`
 
 With components, the heuristics around how markup should contain flow or text content and the distinction regarding if an element should be a wrapper or be wrapped differs from that of normal html elements. Since we can't simply look up known block- or text-level html element names and don't want to rely on declarative APIs (such as adding a property to components or a flag around its tag), we instead lend the desired structural meaning to **adjacent lines** and **blank lines** between tags in a way that lets user control more granularly the parser's behavior.
 

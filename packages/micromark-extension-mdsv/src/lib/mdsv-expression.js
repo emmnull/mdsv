@@ -1,6 +1,6 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
 
-import { types } from '@mdsv/constants';
+import { constructs, types } from '@mdsv/constants';
 import { assert } from '@mdsv/utils';
 import { codes } from 'micromark-util-symbol';
 import { factoryExpression } from './utils/factory-expression.js';
@@ -10,9 +10,9 @@ export function mdsvExpression() {
   return {
     text: {
       [codes.leftCurlyBrace]: {
-        name: types.expression,
-        tokenize,
         concrete: true,
+        name: constructs.expressionText,
+        tokenize: tokenizeExpressionText,
       },
     },
   };
@@ -30,7 +30,7 @@ export function htmlMdsvExpression() {
 }
 
 /** @type {Tokenizer} */
-function tokenize(effects, ok, nok) {
+function tokenizeExpressionText(effects, ok, nok) {
   return start;
 
   /**

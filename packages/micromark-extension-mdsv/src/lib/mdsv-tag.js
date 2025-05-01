@@ -1,6 +1,6 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
 
-import { types } from '@mdsv/constants';
+import { constructs, types } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
@@ -11,14 +11,14 @@ export function mdsvTag() {
   return {
     flow: {
       [codes.leftCurlyBrace]: {
-        name: types.tagFlow,
+        name: constructs.tagFlow,
         tokenize: tokenizeTagFlow,
         concrete: true,
       },
     },
     text: {
       [codes.leftCurlyBrace]: {
-        name: types.tagText,
+        name: constructs.tagText,
         tokenize: tokenizeTagText,
         concrete: true,
       },
