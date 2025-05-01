@@ -10,7 +10,7 @@ import {
 import { htmlRawNames } from 'micromark-util-html-tag-name';
 import { codes } from 'micromark-util-symbol';
 import { factoryElementMisc } from './factory-element-misc.js';
-import { factoryElementTagAttributes } from './factory-element-tag-attributes.js';
+import { factoryElementTagContent } from './factory-element-tag-content.js';
 
 /**
  * ```markdown
@@ -140,10 +140,6 @@ export function factoryElementTag(
       name = String.fromCharCode(code);
       return tagName;
     }
-    if (markdownLineEndingOrSpace(code)) {
-      effects.consume(code);
-      return tagNameStart;
-    }
     return nok(code);
   }
 
@@ -182,7 +178,7 @@ export function factoryElementTag(
       effects.consume(code);
       return tagNameAfter;
     }
-    return factoryElementTagAttributes(
+    return factoryElementTagContent(
       effects,
       attributesAfter,
       nok,

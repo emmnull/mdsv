@@ -26,7 +26,7 @@ import { factoryExpression } from './factory-expression.js';
  * @param {State} nok State transitioned to if invalid syntax.
  * @param {TokenType} type
  */
-export function factoryElementTagAttributes(effects, ok, nok, type) {
+export function factoryElementTagContent(effects, ok, nok, type) {
   /**
    * @type {typeof codes.apostrophe
    *   | typeof codes.quotationMark
