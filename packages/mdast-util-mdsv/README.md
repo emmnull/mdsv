@@ -9,10 +9,18 @@
 
 Handle svelte tokens as nodes inside markdown abstract syntax tree (MDAST).
 
-## Front matter
+## Metadata
 
 Parse front matter into Svelte `module` metadata.
 
-## Element-to-component replacement
+> [!NOTE]
+> This works by injecting a `<script module>` with the parsed front matter defined under a customizable key.
+> If a `<script module>` element is already found in the markdown, both contents will be coalesced.
 
-Replace output elements with custom components.
+## Custom component
+
+Replace parsing output elements with custom components.
+
+## Table of contents
+
+Extract table of contents data from headings and expose in `<script module>`

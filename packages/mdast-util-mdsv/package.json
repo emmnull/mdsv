@@ -19,5 +19,14 @@
     "dev": "node --test --watch",
     "test": "node --test"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@mdsv/constants": "workspace:^",
+    "@mdsv/utils": "workspace:^",
+    "@types/mdast": "^4.0.4",
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-to-markdown": "^2.1.2",
+    "micromark-extension-mdsv": "workspace:^",
+    "toml": "^3.0.0",
+    "yaml": "^2.7.1"
+  }
 }
