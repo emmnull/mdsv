@@ -1,12 +1,4 @@
-/** Token and node types related to Svelte syntaxes in markdown. */
-export const types = /** @type const */ ({
-  /**
-   * ```markdown
-   * > | {...}
-   *     ^   ^
-   * ```
-   */
-  marker: 'svelteMarker',
+export const constructs = /** @type {const} */ ({
   /**
    * ```markdown
    *   |
@@ -25,20 +17,6 @@ export const types = /** @type const */ ({
   expressionText: 'svelteExpressionText',
   /**
    * ```markdown
-   * > | {...}
-   *     ^^^^^
-   * ```
-   */
-  expression: 'svelteExpression',
-  /**
-   * ```markdown
-   * > | {...}
-   *      ^^^
-   * ```
-   */
-  expressionValue: 'svelteExpressionValue',
-  /**
-   * ```markdown
    *   |
    * > | {@...}
    *     ^^^^^^
@@ -53,34 +31,6 @@ export const types = /** @type const */ ({
    * ```
    */
   tagText: 'svelteTagText',
-  /**
-   * ```markdown
-   * > | {@...}
-   *     ^^^^^^
-   * ```
-   */
-  tag: 'svelteTag',
-  /**
-   * ```markdown
-   * > | {@...}
-   *      ^
-   * ```
-   */
-  tagMarker: 'svelteTagMarker',
-  /**
-   * ```markdown
-   * > | {@foo}
-   *       ^^^
-   * ```
-   */
-  tagName: 'svelteTagName',
-  /**
-   * ```markdown
-   * > | {@foo ...}
-   *           ^^^
-   * ```
-   */
-  tagValue: 'svelteTagValue',
   /**
    * ```markdown
    *   |
@@ -113,6 +63,75 @@ export const types = /** @type const */ ({
    * ```
    */
   blockText: 'svelteBlockText',
+  /**
+   * ```markdown
+   *   |
+   * > | <foo>
+   *     ^^^^^
+   *   |
+   * ```
+   */
+  elementFlow: 'svelteFlow',
+  /**
+   * ```markdown
+   * > | ...<foo>...
+   *        ^^^^^
+   * ```
+   */
+  elementText: 'svelteFlow',
+});
+
+/** Token and node types related to Svelte syntaxes in markdown. */
+export const types = /** @type const */ ({
+  /**
+   * ```markdown
+   * > | {...}
+   *     ^   ^
+   * ```
+   */
+  marker: 'svelteMarker',
+  /**
+   * ```markdown
+   * > | {...}
+   *     ^^^^^
+   * ```
+   */
+  expression: 'svelteExpression',
+  /**
+   * ```markdown
+   * > | {...}
+   *      ^^^
+   * ```
+   */
+  expressionValue: 'svelteExpressionValue',
+  /**
+   * ```markdown
+   * > | {@...}
+   *     ^^^^^^
+   * ```
+   */
+  tag: 'svelteTag',
+  /**
+   * ```markdown
+   * > | {@...}
+   *      ^
+   * ```
+   */
+  tagMarker: 'svelteTagMarker',
+  /**
+   * ```markdown
+   * > | {@foo}
+   *       ^^^
+   * ```
+   */
+  tagName: 'svelteTagName',
+  /**
+   * ```markdown
+   * > | {@foo ...}
+   *           ^^^
+   * ```
+   */
+  tagValue: 'svelteTagValue',
   /**
    * ```markdown
    * > | {#...}
@@ -178,22 +197,6 @@ export const types = /** @type const */ ({
   blockTagValue: 'svelteBlockTagValue',
   /**
    * ```markdown
-   *   |
-   * > | <foo>
-   *     ^^^^^
-   *   |
-   * ```
-   */
-  elementFlow: 'svelteFlow',
-  /**
-   * ```markdown
-   * > | ...<foo>...
-   *        ^^^^^
-   * ```
-   */
-  elementText: 'svelteFlow',
-  /**
-   * ```markdown
    * > | <foo>
    *     ^^^^^
    * ```
@@ -220,24 +223,6 @@ export const types = /** @type const */ ({
    * ```
    */
   elementTagAttribute: 'svelteElementTagAttribute',
-  /** @deprecated */
-  svelteFlowTag: 'svelteFlowTag',
-  /** @deprecated */
-  svelteFlowTagMarker: 'svelteFlowTagMarker',
-  /** @deprecated */
-  svelteFlowTagName: 'svelteFlowTagName',
-  /** @deprecated */
-  svelteFlowTagAttribute: 'svelteFlowTagAttribute',
-  /** @deprecated */
-  svelteText: 'svelteText',
-  /** @deprecated */
-  svelteTextTag: 'svelteTextTag',
-  /** @deprecated */
-  svelteTextTagMarker: 'svelteTextTagMarker',
-  /** @deprecated */
-  svelteTextTagName: 'svelteTextTagName',
-  /** @deprecated */
-  svelteTextTagAttribute: 'svelteTextTagAttribute',
 });
 
 /**
@@ -283,5 +268,5 @@ export const htmlCustomizableNames = /** @type {const} */ ([
   'hr',
   'img',
   'code', // inline code
-  'pre', // fenced code
+  'pre', // fenced code wrapper
 ]);
