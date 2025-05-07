@@ -7,14 +7,14 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  expressionFlow: 'svelteExpressionFlow',
+  expressionFlow: 'mdsvExpressionFlow',
   /**
    * ```markdown
    * > | ...{...}...
    *        ^^^^^
    * ```
    */
-  expressionText: 'svelteExpressionText',
+  expressionText: 'mdsvExpressionText',
   /**
    * ```markdown
    *   |
@@ -23,14 +23,14 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  tagFlow: 'svelteTagFlow',
+  atTagFlow: 'mdsvAtTagFlow',
   /**
    * ```markdown
    * > | ...{@...}....
    *        ^^^^^^
    * ```
    */
-  tagText: 'svelteTagText',
+  atTagText: 'mdsvAtTagText',
   /**
    * ```markdown
    *   |
@@ -49,7 +49,7 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  blockFlow: 'svelteBlockFlow',
+  blockFlow: 'mdsvBlockFlow',
   /**
    * ```markdown
    * > | ...{#...}...
@@ -62,7 +62,7 @@ export const constructs = /** @type {const} */ ({
    *        ^^^^^^
    * ```
    */
-  blockText: 'svelteBlockText',
+  blockText: 'mdsvBlockText',
   /**
    * ```markdown
    *   |
@@ -71,14 +71,14 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  elementFlow: 'svelteFlow',
+  elementFlow: 'mdsvFlow',
   /**
    * ```markdown
    * > | ...<foo>...
    *        ^^^^^
    * ```
    */
-  elementText: 'svelteFlow',
+  elementText: 'mdsvFlow',
 });
 
 /** Token and node types related to Svelte syntaxes in markdown. */
@@ -89,49 +89,49 @@ export const types = /** @type const */ ({
    *     ^   ^
    * ```
    */
-  marker: 'svelteMarker',
+  marker: 'mdsvMarker',
   /**
    * ```markdown
    * > | {...}
    *     ^^^^^
    * ```
    */
-  expression: 'svelteExpression',
+  expression: 'mdsvExpression',
   /**
    * ```markdown
    * > | {...}
    *      ^^^
    * ```
    */
-  expressionValue: 'svelteExpressionValue',
+  expressionValue: 'mdsvExpressionValue',
   /**
    * ```markdown
    * > | {@...}
    *     ^^^^^^
    * ```
    */
-  tag: 'svelteTag',
+  atTag: 'mdsvAtTag',
   /**
    * ```markdown
    * > | {@...}
    *      ^
    * ```
    */
-  tagMarker: 'svelteTagMarker',
+  atTagMarker: 'mdsvTagMarker',
   /**
    * ```markdown
    * > | {@foo}
    *       ^^^
    * ```
    */
-  tagName: 'svelteTagName',
+  atTagName: 'mdsvTagName',
   /**
    * ```markdown
    * > | {@foo ...}
    *           ^^^
    * ```
    */
-  tagValue: 'svelteTagValue',
+  atTagValue: 'mdsvTagValue',
   /**
    * ```markdown
    * > | {#...}
@@ -142,7 +142,7 @@ export const types = /** @type const */ ({
    *     ^^^^^^
    * ```
    */
-  block: 'svelteBlock',
+  block: 'mdsvBlock',
   /**
    * ```markdown
    * > | {#...}
@@ -155,7 +155,7 @@ export const types = /** @type const */ ({
    *     ^^^^^^
    * ```
    */
-  blockTag: 'svelteBlockTag',
+  blockTag: 'mdsvBlockTag',
   /**
    * ```markdown
    * > | {#...}
@@ -168,7 +168,7 @@ export const types = /** @type const */ ({
    *      ^
    * ```
    */
-  blockTagMarker: 'svelteBlockTagMarker',
+  blockTagMarker: 'mdsvBlockTagMarker',
   /**
    * ```markdown
    * > | {#foo}
@@ -181,7 +181,7 @@ export const types = /** @type const */ ({
    *       ^^^
    * ```
    */
-  blockTagName: 'svelteBlockTagName',
+  blockTagName: 'mdsvBlockTagName',
   /**
    * ```markdown
    * > | {#foo ...}
@@ -194,35 +194,44 @@ export const types = /** @type const */ ({
    *           ^^^
    * ```
    */
-  blockTagValue: 'svelteBlockTagValue',
+  blockTagValue: 'mdsvBlockTagValue',
   /**
    * ```markdown
    * > | <foo>
    *     ^^^^^
    * ```
    */
-  elementTag: 'svelteElementTag',
+  elementTag: 'mdsvElementTag',
   /**
    * ```markdown
    * > | <foo>
    *     ^   ^
    * ```
    */
-  elementTagMarker: 'svelteElementTagMarker',
+  elementTagMarker: 'mdsvElementTagMarker',
   /**
    * ```markdown
    * > | <foo>
    *      ^^^
    * ```
    */
-  elementTagName: 'svelteElementTagName',
+  elementTagName: 'mdsvElementTagName',
   /**
    * ```markdown
    * > | <foo bar>
    *          ^^^
    * ```
    */
-  elementTagAttribute: 'svelteElementTagAttribute',
+  elementTagAttribute: 'mdsvElementTagAttribute',
+  /**
+   * ```markdown
+   *   | <script>
+   * > | const foo = bar;
+   *     ^^^^^^^^^^^^^^^^
+   *   | </script>
+   * ```
+   */
+  elementRaw: 'mdsvElementRaw',
 });
 
 /**
