@@ -155,7 +155,12 @@ export function factoryBlockTag(
       return nameAfter;
     }
     effects.enter(tagValueType);
-    return factoryExpression(effects, valueAfter, nok)(code);
+    return factoryExpression(
+      effects,
+      valueAfter,
+      nok,
+      codes.rightCurlyBrace,
+    )(code);
   }
 
   /**

@@ -1,10 +1,12 @@
 /** @import {Tokenizer, State, Code, Effects, Token} from 'micromark-util-types'; */
 
+import { factorySpace } from 'micromark-factory-space';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
+  markdownSpace,
 } from 'micromark-util-character';
-import { codes } from 'micromark-util-symbol';
+import { codes, types as coreTypes } from 'micromark-util-symbol';
 
 /** @param {Code} code */
 function isRegexFlag(code) {
@@ -49,10 +51,11 @@ function getClosingBracket(code) {
  * ```
  *
  * @param {Effects} effects
- * @param {(brace: typeof codes.rightCurlyBrace) => State | undefined} ok
+ * @param {State} ok
  * @param {State} nok
+ * @param {Code} closing
  */
-export function factoryExpression(effects, ok, nok) {
+export function factoryExpression(effects, ok, nok, closing) {
   /**
    * @type {(
    *   | typeof codes.leftCurlyBrace
@@ -70,11 +73,11 @@ export function factoryExpression(effects, ok, nok) {
    */
   const regexBrackets = [];
 
-  return plainExpression;
+  return start;
 
   /** @type {State} */
-  function plainExpression(code) {
-    if (code === codes.rightCurlyBrace) {
+  function start(code) {
+    if (code === closing) {
       return ok(code);
     }
     if (code === codes.eof) {
@@ -99,7 +102,7 @@ export function factoryExpression(effects, ok, nok) {
     ) {
       brackets.push(code);
       effects.consume(code);
-      return plainExpression;
+      return start;
     }
     if (
       code === codes.rightCurlyBrace ||
@@ -114,8 +117,17 @@ export function factoryExpression(effects, ok, nok) {
         }
       }
     }
+    if (markdownSpace(code)) {
+      return factorySpace(effects, start, coreTypes.whitespace)(code);
+    }
+    if (markdownLineEndingOrSpace(code)) {
+      effects.enter(coreTypes.whitespace);
+      effects.consume(code);
+      effects.exit(coreTypes.whitespace);
+      return start;
+    }
     effects.consume(code);
-    return plainExpression;
+    return start;
   }
 
   /** @param {NonNullable<Code>} quote */
@@ -131,7 +143,7 @@ export function factoryExpression(effects, ok, nok) {
       }
       if (code === quote) {
         effects.consume(code);
-        return plainExpression;
+        return start;
       }
       effects.consume(code);
       return consumeString;
@@ -166,9 +178,11 @@ export function factoryExpression(effects, ok, nok) {
     if (code === codes.eof) {
       return nok;
     }
-    if (markdownLineEndingOrSpace(code)) {
+    if (markdownLineEnding(code)) {
+      effects.enter(coreTypes.whitespace);
       effects.consume(code);
-      return plainExpression;
+      effects.exit(coreTypes.whitespace);
+      return start;
     }
     effects.consume(code);
     return consumeSingleLineComment;
@@ -194,7 +208,7 @@ export function factoryExpression(effects, ok, nok) {
     }
     if (code === codes.slash) {
       effects.consume(code);
-      return plainExpression;
+      return start;
     }
     return consumeMultiLineComment(code);
   }
@@ -241,7 +255,7 @@ export function factoryExpression(effects, ok, nok) {
       effects.consume(code);
       return consumeRegexFlags;
     }
-    return plainExpression;
+    return start;
   }
 
   /** @type {State} */
@@ -251,7 +265,7 @@ export function factoryExpression(effects, ok, nok) {
     }
     if (code === codes.graveAccent) {
       effects.consume(code);
-      return plainExpression;
+      return start;
     }
     if (code === codes.backslash) {
       effects.consume(code);
@@ -279,7 +293,7 @@ export function factoryExpression(effects, ok, nok) {
     if (code === codes.leftCurlyBrace) {
       brackets.push(code);
       effects.consume(code);
-      return plainExpression;
+      return start;
     }
     return consumeTemplateLiteral(code);
   }

@@ -3,12 +3,12 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlMdsvElement, mdsvElement } from '../lib/mdsv-element.js';
+import { mdsvElement, mdsvElementHtml } from '../lib/mdsv-element.js';
 
 /** @type {Options} */
 const options = {
   extensions: [mdsvElement()],
-  htmlExtensions: [htmlMdsvElement()],
+  htmlExtensions: [mdsvElementHtml()],
   allowDangerousHtml: true,
 };
 
@@ -89,10 +89,20 @@ describe('svelteElement micromark extesion processes elements and components syn
     );
   });
 
-  it.skip('tokenizes nested flow tags', () => {
+  it('tokenizes nested flow tags', () => {
     strictEqual(
       micromark('<Foo>\n<Bar>Hi mom</Bar>\n</Foo>', options),
       '<Foo>\n<Bar>Hi mom</Bar>\n</Foo>',
+    );
+  });
+
+  it('supports raw element content', () => {
+    strictEqual(
+      micromark(
+        '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
+        options,
+      ),
+      '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
     );
   });
 });

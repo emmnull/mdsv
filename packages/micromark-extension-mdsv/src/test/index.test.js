@@ -1,21 +1,20 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { htmlMdsv, mdsv } from '../index.js';
+import { mdsv, mdsvHtml } from '../index.js';
 
-describe.skip('micromark extension tokenizes svelte syntax in markdown', () => {
-  /** @type {import('micromark-util-types').Options} */
-  const options = {
-    extensions: [mdsv()],
-    htmlExtensions: [htmlMdsv()],
-    allowDangerousHtml: true,
-  };
+/** @type {import('micromark-util-types').Options} */
+const options = {
+  extensions: [mdsv()],
+  htmlExtensions: [mdsvHtml()],
+  allowDangerousHtml: true,
+};
 
+describe('mdsv extension supports all svelte syntax in markdown', () => {
   it('should not tokenize svelte syntax without the extensions', () => {
-    strictEqual(micromark('{foo}', { allowDangerousHtml: true }), '');
     strictEqual(
       micromark('# {foo}', { allowDangerousHtml: true }),
-      '<h1></h1>',
+      '<h1>{foo}</h1>',
     );
   });
 
@@ -32,7 +31,10 @@ describe.skip('micromark extension tokenizes svelte syntax in markdown', () => {
   });
 
   it('tokenizes svelte branch syntax', () => {
-    strictEqual(micromark('foo\n{:else}\nbar', options), 'foo\n{:else}\nbar');
+    strictEqual(
+      micromark('foo\n{:else}\nbar', options),
+      '<p>foo</p>\n{:else}\n<p>bar</p>',
+    );
   });
 
   it('tokenizes svelte tag syntax', () => {

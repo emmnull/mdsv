@@ -12,6 +12,9 @@
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "files": [
     "dist"
   ],

@@ -6,7 +6,12 @@ import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
 import { factoryBlockTag } from './utils/factory-block-tag.js';
 
-/** @returns {Extension} */
+/**
+ * Basic syntax for lax support of svelte block tags (`{#open}`, `{:branch}`,
+ * `{/close}`). Does not validate block keywords.
+ *
+ * @returns {Extension}
+ */
 export function mdsvBlock() {
   return {
     disable: {
@@ -30,7 +35,7 @@ export function mdsvBlock() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlMdsvBlock() {
+export function mdsvBlockHtml() {
   return {
     exit: {
       [types.blockTag](token) {

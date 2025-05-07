@@ -20,7 +20,7 @@ import { factoryExpression } from './factory-expression.js';
  * @param {TokenType} tagNameType
  * @param {TokenType} tagValueType
  */
-export function factoryTag(
+export function factoryAtTag(
   effects,
   ok,
   nok,
@@ -121,7 +121,12 @@ export function factoryTag(
       return afterName;
     }
     effects.enter(tagValueType);
-    return factoryExpression(effects, afterValue, nok)(code);
+    return factoryExpression(
+      effects,
+      afterValue,
+      nok,
+      codes.rightCurlyBrace,
+    )(code);
   }
 
   /**

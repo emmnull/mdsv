@@ -7,8 +7,8 @@ type SvelteTokenTypeMap = {
 };
 
 type SvelteTokenizeContext = {
-  svelteElementStack?: string[];
-  // svelteBlockStack?: string[];
+  mdsvElementTagName?: string;
+  // mdsvElementRaw?: boolean;
 };
 
 declare module 'micromark-util-types' {

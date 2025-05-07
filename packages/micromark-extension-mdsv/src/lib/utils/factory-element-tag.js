@@ -1,4 +1,4 @@
-/** @import {Code, Effects, State, TokenType} from 'micromark-util-types' */
+/** @import {Code, Effects, State, TokenType, TokenizeContext} from 'micromark-util-types' */
 
 import { htmlVoidNames } from '@mdsv/constants';
 import { assert } from '@mdsv/utils';
@@ -7,10 +7,9 @@ import {
   asciiAlphanumeric,
   markdownLineEndingOrSpace,
 } from 'micromark-util-character';
-import { htmlRawNames } from 'micromark-util-html-tag-name';
 import { codes } from 'micromark-util-symbol';
 import { factoryElementMisc } from './factory-element-misc.js';
-import { factoryElementTagContent } from './factory-element-tag-content.js';
+import { factoryElementTagAttributes } from './factory-element-tag-attributes.js';
 
 /**
  * ```markdown
@@ -60,6 +59,7 @@ export function svelteName(name) {
 }
 
 /**
+ * @this {TokenizeContext}
  * @param {Effects} effects
  * @param {State} ok
  * @param {State} nok
@@ -77,14 +77,11 @@ export function factoryElementTag(
   nameType,
   attributeType,
 ) {
+  const self = this;
   /** @type {string} */
   let name;
   /** @type {boolean} */
   let isClosingTag;
-  /** @type {boolean} */
-  let isSelfClosing;
-  /** @type {boolean} */
-  let isRawTag;
 
   return start;
 
@@ -158,7 +155,7 @@ export function factoryElementTag(
       return tagName;
     }
     effects.exit(nameType);
-    isRawTag = htmlRawNames.includes(name);
+    self.mdsvElementTagName = name;
     return tagNameAfter(code);
   }
 
@@ -178,7 +175,7 @@ export function factoryElementTag(
       effects.consume(code);
       return tagNameAfter;
     }
-    return factoryElementTagContent(
+    return factoryElementTagAttributes(
       effects,
       attributesAfter,
       nok,
@@ -202,7 +199,7 @@ export function factoryElementTag(
    */
   function attributesAfter(code) {
     if (code === codes.slash) {
-      isSelfClosing = true;
+      isClosingTag = true;
       effects.consume(code);
       return end;
     }
@@ -223,7 +220,10 @@ export function factoryElementTag(
       effects.consume(code);
       effects.exit(markerType);
       effects.exit(type);
-      isSelfClosing ||= htmlVoidNames.includes(name);
+      isClosingTag ||= htmlVoidNames.includes(name);
+      if (isClosingTag) {
+        self.mdsvElementTagName = undefined;
+      }
       return ok;
     }
     return nok(code);

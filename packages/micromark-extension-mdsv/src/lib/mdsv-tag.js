@@ -4,21 +4,21 @@ import { constructs, types } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
-import { factoryTag } from './utils/factory-tag.js';
+import { factoryAtTag } from './utils/factory-at-tag.js';
 
 /** @returns {Extension} */
-export function mdsvTag() {
+export function mdsvAtTag() {
   return {
     flow: {
       [codes.leftCurlyBrace]: {
-        name: constructs.tagFlow,
+        name: constructs.atTagFlow,
         tokenize: tokenizeTagFlow,
         concrete: true,
       },
     },
     text: {
       [codes.leftCurlyBrace]: {
-        name: constructs.tagText,
+        name: constructs.atTagText,
         tokenize: tokenizeTagText,
         concrete: true,
       },
@@ -27,10 +27,10 @@ export function mdsvTag() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlMdsvTag() {
+export function mdsvAtTagHtml() {
   return {
     exit: {
-      [types.tag](token) {
+      [types.atTag](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -50,15 +50,15 @@ function tokenizeTagFlow(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryTag(
+    return factoryAtTag(
       effects,
       endAfter,
       nok,
-      types.tag,
+      types.atTag,
       types.marker,
-      types.tagMarker,
-      types.tagName,
-      types.tagValue,
+      types.atTagMarker,
+      types.atTagName,
+      types.atTagValue,
     )(code);
   }
 
@@ -90,15 +90,15 @@ function tokenizeTagText(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryTag(
+    return factoryAtTag(
       effects,
       ok,
       nok,
-      types.tag,
+      types.atTag,
       types.marker,
-      types.tagMarker,
-      types.tagName,
-      types.tagValue,
+      types.atTagMarker,
+      types.atTagName,
+      types.atTagValue,
     )(code);
   }
 }

@@ -24,9 +24,9 @@ import { factoryExpression } from './factory-expression.js';
  * @param {State} ok State transitioned to after encountering a closing bracket
  *   or slash.
  * @param {State} nok State transitioned to if invalid syntax.
- * @param {TokenType} type
+ * @param {TokenType} attributeType
  */
-export function factoryElementTagContent(effects, ok, nok, type) {
+export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
   /**
    * @type {typeof codes.apostrophe
    *   | typeof codes.quotationMark
@@ -67,7 +67,7 @@ export function factoryElementTagContent(effects, ok, nok, type) {
    * @type {State}
    */
   function attributeStart(code) {
-    effects.enter(type);
+    effects.enter(attributeType);
     return attribute(code);
   }
 
@@ -84,11 +84,11 @@ export function factoryElementTagContent(effects, ok, nok, type) {
       return nok(code);
     }
     if (code === codes.slash || code === codes.greaterThan) {
-      effects.exit(type);
+      effects.exit(attributeType);
       return ok(code);
     }
     if (markdownLineEndingOrSpace(code)) {
-      effects.exit(type);
+      effects.exit(attributeType);
       effects.consume(code);
       return start;
     }
@@ -97,7 +97,12 @@ export function factoryElementTagContent(effects, ok, nok, type) {
     }
     if (code === codes.leftCurlyBrace) {
       effects.consume(code);
-      return factoryExpression(effects, attributeBraceEnd, nok);
+      return factoryExpression(
+        effects,
+        attributeBraceEnd,
+        nok,
+        codes.rightCurlyBrace,
+      );
     }
     effects.consume(code);
     return attribute;
@@ -170,7 +175,12 @@ export function factoryElementTagContent(effects, ok, nok, type) {
       return nok(code);
     }
     if (code === codes.leftCurlyBrace) {
-      return factoryExpression(effects, attributeQuoteBraceEnd, nok)(code);
+      return factoryExpression(
+        effects,
+        attributeQuoteBraceEnd,
+        nok,
+        codes.rightCurlyBrace,
+      )(code);
     }
     effects.consume(code);
     return attributeQuote;

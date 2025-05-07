@@ -19,7 +19,7 @@ export function mdsvExpression() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlMdsvExpression() {
+export function mdsvExpressionHtml() {
   return {
     exit: {
       [types.expression](token) {
@@ -68,7 +68,7 @@ function tokenizeExpressionText(effects, ok, nok) {
       return nok(code);
     }
     effects.enter(types.expressionValue);
-    return factoryExpression(effects, end, nok)(code);
+    return factoryExpression(effects, end, nok, codes.rightCurlyBrace)(code);
   }
 
   /**

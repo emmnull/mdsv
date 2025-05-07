@@ -5,8 +5,10 @@ import { assert } from '@mdsv/utils';
 import { blankLine } from 'micromark-core-commonmark';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
+import { htmlRawNames } from 'micromark-util-html-tag-name';
 import { codes, constants, types as coreTypes } from 'micromark-util-symbol';
 import { factoryElementTag } from './utils/factory-element-tag.js';
+import { factoryExpression } from './utils/factory-expression.js';
 
 /** @returns {Extension} */
 export function mdsvElement() {
@@ -33,10 +35,13 @@ export function mdsvElement() {
 }
 
 /** @returns {HtmlExtension} */
-export function htmlMdsvElement() {
+export function mdsvElementHtml() {
   return {
     exit: {
       [types.elementTag](token) {
+        this.raw(this.sliceSerialize(token));
+      },
+      [types.elementRaw](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -50,35 +55,21 @@ const blankLineAfter = {
 };
 
 /** @type {Construct} */
+const rawCloseTag = {
+  partial: true,
+  tokenize: tokenizeRawCloseTag,
+};
+
+/** @type {Construct} */
 const nonLazyContinuationStart = {
   partial: true,
   tokenize: tokenizeNonLazyContinuationStart,
 };
 
-// /** @type {Resolver} */
-// function resolveTo(events) {
-//   let index = events.length;
-//   while (index--) {
-//     if (
-//       events[index][0] === 'enter' &&
-//       events[index][1].type === types.svelteFlow
-//     ) {
-//       break;
-//     }
-//   }
-//   if (index > 1 && events[index - 2][1].type === coreTypes.linePrefix) {
-//     // Add the prefix start to the HTML token.
-//     events[index][1].start = events[index - 2][1].start;
-//     // Add the prefix start to the HTML line token.
-//     events[index + 1][1].start = events[index - 2][1].start;
-//     // Remove the line prefix.
-//     events.splice(index - 2, 2);
-//   }
-//   return events;
-// }
-
 /** @type {Tokenizer} */
 function tokenizeElementFlow(effects, ok, nok) {
+  const self = this;
+
   return start;
 
   /**
@@ -90,7 +81,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryElementTag(
+    return factoryElementTag.call(
+      self,
       effects,
       endAfter,
       nok,
@@ -112,6 +104,13 @@ function tokenizeElementFlow(effects, ok, nok) {
   function endAfter(code) {
     if (code === codes.eof) {
       return ok(code);
+    }
+    if (
+      self.mdsvElementTagName &&
+      htmlRawNames.includes(self.mdsvElementTagName)
+    ) {
+      effects.enter(types.elementRaw);
+      return raw(code);
     }
     if (markdownSpace(code)) {
       return factorySpace(effects, endAfter, coreTypes.whitespace)(code);
@@ -222,13 +221,52 @@ function tokenizeElementFlow(effects, ok, nok) {
     effects.consume(code);
     return chunk;
   }
+
+  /**
+   * ```markdown
+   * > | <script>const foo = "bar"</script>
+   *             ^^^^^^^^^^^^^^^^^
+   * ```
+   *
+   * @type {State}
+   */
+  function raw(code) {
+    return factoryExpression(
+      effects,
+      effects.attempt(rawCloseTag, ok, rawConsume),
+      nok,
+      codes.lessThan,
+    )(code);
+  }
+
+  /** @type {State} */
+  function rawConsume(code) {
+    effects.consume(code);
+    return raw;
+  }
 }
 
-/** @type {Tokenizer} */
+/**
+ * ```markdown
+ *   | <>
+ *   |
+ * > |
+ *    ^
+ * ```
+ *
+ * @type {Tokenizer}
+ */
 function tokenizeBlankLineAfter(effects, ok, nok) {
   return start;
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   * > | <>
+   *       ^
+   * ```
+   *
+   * @type {State}
+   */
   function start(code) {
     assert(markdownLineEnding(code), 'expected to be at line ending');
     effects.enter(coreTypes.lineEnding);
@@ -238,13 +276,28 @@ function tokenizeBlankLineAfter(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * ```markdown
+ *   | <>
+ * > |
+ *    ^
+ * ```
+ *
+ * @type {Tokenizer}
+ */
 function tokenizeNonLazyContinuationStart(effects, ok, nok) {
   const self = this;
 
   return start;
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   * > | <>
+   *       ^
+   * ```
+   *
+   * @type {State}
+   */
   function start(code) {
     if (markdownLineEnding(code)) {
       effects.enter(coreTypes.lineEnding);
@@ -255,14 +308,148 @@ function tokenizeNonLazyContinuationStart(effects, ok, nok) {
     return nok(code);
   }
 
-  /** @type {State} */
+  /**
+   * ```markdown
+   *   | <>
+   * > |
+   *    ^
+   * ```
+   *
+   * @type {State}
+   */
   function after(code) {
     return self.parser.lazy[self.now().line] ? nok(code) : ok(code);
   }
 }
 
+/**
+ * ```markdown
+ *   | <script>
+ * > |
+ *    ^
+ * ```
+ *
+ * @type {Tokenizer}
+ */
+function tokenizeRawCloseTag(effects, ok, nok) {
+  const rawName = this.mdsvElementTagName;
+  let index = 0;
+
+  assert(
+    rawName != undefined,
+    'expected tokenizer current element name to be defined',
+  );
+  assert(
+    htmlRawNames.includes(rawName),
+    'expected current element name to be raw name',
+  );
+
+  return start;
+
+  /**
+   * ```markdown
+   * > | <script>const foo = "bar"</script>
+   *                              ^
+   * ```
+   *
+   * @type {State}
+   */
+  function start(code) {
+    assert(code === codes.lessThan, 'expected `<`');
+    effects.exit(types.elementRaw);
+    effects.enter(types.elementTag);
+    effects.enter(types.elementTagMarker);
+    effects.consume(code);
+    effects.exit(types.elementTagMarker);
+    return startAfter;
+  }
+
+  /**
+   * ```markdown
+   * > | <script>const foo = "bar"</script>
+   *                               ^
+   * ```
+   *
+   * @type {State}
+   */
+  function startAfter(code) {
+    if (code === codes.slash) {
+      effects.consume(code);
+      effects.enter(types.elementTagName);
+      return tagName;
+    }
+    return nok(code);
+  }
+
+  /**
+   * ```markdown
+   * > | <script>const foo = "bar"</script>
+   *                                ^^^^^^
+   * ```
+   *
+   * @type {State}
+   */
+  function tagName(code) {
+    assert(
+      rawName != undefined,
+      'expected open raw element tag name to be defined',
+    );
+    if (index < rawName.length && code === rawName.charCodeAt(index++)) {
+      effects.consume(code);
+      if (index < rawName.length) {
+        return tagName;
+      }
+      effects.exit(types.elementTagName);
+      return end;
+    }
+    return nok(code);
+  }
+
+  /**
+   * ```markdown
+   * > | <script>const foo = "bar"</script>
+   *                                      ^
+   * ```
+   *
+   * @type {State}
+   */
+  function end(code) {
+    if (code === codes.greaterThan) {
+      effects.enter(types.elementTagMarker);
+      effects.consume(code);
+      effects.exit(types.elementTagMarker);
+      effects.exit(types.elementTag);
+      return ok;
+    }
+    return nok(code);
+  }
+
+  // /**
+  //  * ```markdown
+  //  * > | <script>const foo = "bar"</script>
+  //  *                                       ^
+  //  * ```
+  //  *
+  //  * @type {State}
+  //  */
+  // function endAfter(code) {
+  //   if (markdownLineEnding(code)) {
+  //     effects.enter(coreTypes.lineEnding);
+  //     effects.consume(code);
+  //     effects.exit(coreTypes.lineEnding);
+  //     return ok;
+  //   }
+  //   if (markdownSpace(code)) {
+  //     return factorySpace(effects, ok, coreTypes.whitespace);
+  //   }
+  //   return ok(code);
+  // }
+}
+
 /** @type {Tokenizer} */
 function tokenizeElementText(effects, ok, nok) {
+  const self = this;
+
   return start;
 
   /**
@@ -274,7 +461,8 @@ function tokenizeElementText(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryElementTag(
+    return factoryElementTag.call(
+      self,
       effects,
       ok,
       nok,

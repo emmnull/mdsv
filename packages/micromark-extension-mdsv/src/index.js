@@ -4,28 +4,36 @@ import {
   combineExtensions,
   combineHtmlExtensions,
 } from 'micromark-util-combine-extensions';
-import { htmlMdsvBlock, mdsvBlock } from './lib/mdsv-block.js';
-import { htmlMdsvElement, mdsvElement } from './lib/mdsv-element.js';
-import { htmlMdsvExpression, mdsvExpression } from './lib/mdsv-expression.js';
-import { htmlMdsvTag, mdsvTag } from './lib/mdsv-tag.js';
+import { mdsvBlock, mdsvBlockHtml } from './lib/mdsv-block.js';
+import { mdsvElement, mdsvElementHtml } from './lib/mdsv-element.js';
+import { mdsvExpression, mdsvExpressionHtml } from './lib/mdsv-expression.js';
+import { mdsvAtTag, mdsvAtTagHtml } from './lib/mdsv-tag.js';
 
-/** @returns {Extension} */
-export function mdsv() {
+/**
+ * @param {object} [options]
+ * @returns {Extension}
+ */
+export function mdsv(options) {
   return combineExtensions([
+    // frontmatter(options?.frontmatter),
     mdsvExpression(),
-    mdsvTag(),
+    mdsvAtTag(),
     mdsvBlock(),
     mdsvElement(),
   ]);
 }
 
-/** @returns {HtmlExtension} */
-export function htmlMdsv() {
+/**
+ * @param {object} [options]
+ * @param {Options} options.frontmatter
+ * @returns {HtmlExtension}
+ */
+export function mdsvHtml(options) {
   return combineHtmlExtensions([
-    htmlMdsvExpression(),
-    htmlMdsvTag(),
-    htmlMdsvBlock(),
-    htmlMdsvElement(),
-    htmlMdsvTag(),
+    // frontmatterHtml(options?.frontmatter),
+    mdsvExpressionHtml(),
+    mdsvAtTagHtml(),
+    mdsvBlockHtml(),
+    mdsvElementHtml(),
   ]);
 }
