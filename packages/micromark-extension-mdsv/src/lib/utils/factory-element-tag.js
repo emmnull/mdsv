@@ -1,7 +1,7 @@
 /** @import {Code, Effects, State, TokenType, TokenizeContext} from 'micromark-util-types' */
 
 import { htmlVoidNames } from '@mdsv/constants';
-import { assert } from '@mdsv/utils';
+import { ok as assert } from 'devlop';
 import {
   asciiAlpha,
   asciiAlphanumeric,
@@ -81,6 +81,8 @@ export function factoryElementTag(
   /** @type {string} */
   let name;
   /** @type {boolean} */
+  let isOpeningTag;
+  /** @type {boolean} */
   let isClosingTag;
 
   return start;
@@ -118,6 +120,8 @@ export function factoryElementTag(
       isClosingTag = true;
       effects.consume(code);
       return tagNameStart;
+    } else {
+      isOpeningTag = true;
     }
     return tagNameStart(code);
   }
@@ -219,11 +223,13 @@ export function factoryElementTag(
       effects.enter(markerType);
       effects.consume(code);
       effects.exit(markerType);
-      effects.exit(type);
+      const token = effects.exit(type);
       isClosingTag ||= htmlVoidNames.includes(name);
       if (isClosingTag) {
         self.mdsvElementTagName = undefined;
       }
+      token._elementClose = isClosingTag;
+      token._elementOpen = isOpeningTag;
       return ok;
     }
     return nok(code);

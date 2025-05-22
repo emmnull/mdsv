@@ -1,42 +1,33 @@
 /**
  * @import {Options as ToMarkdownExtension} from 'mdast-util-to-markdown';
+ * @import {Extension as MicromarkExtension} from 'micromark-util-types';
+ * @import {Extension as FromMarkdownExtension} from 'mdast-util-from-markdown';
  * @import {Processor} from 'unified';
  */
 
-import {
-  frontmatterFromMarkdown,
-  frontmatterToMarkdown,
-} from 'mdast-util-frontmatter';
-import { gfmFromMarkdown, gfmToMarkdown } from 'mdast-util-gfm';
+// import {
+//   frontmatterFromMarkdown,
+//   frontmatterToMarkdown,
+// } from 'mdast-util-frontmatter';
 import { frontmatter } from 'micromark-extension-frontmatter';
-import { gfm } from 'micromark-extension-gfm';
-import { mdxMd } from 'micromark-extension-mdx-md';
+import { mdsv } from 'micromark-extension-mdsv';
 
 /** @this {Processor} */
-export default function remarkSvelte() {
+export default function remarkMdsv(options) {
   const data = this.data();
   const micromarkExtensions =
-    data.micromarkExtensions || (data.micromarkExtensions = []);
+    /** @type MicromarkExtension[] */
+    // @ts-expect-error type of data is missing micromarkExtensions
+    (data.micromarkExtensions || (data.micromarkExtensions = []));
   const fromMarkdownExtensions =
-    data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
+    /** @type {FromMarkdownExtension[]} */
+    // @ts-expect-error type of data is missing toMarkdownExtensions
+    (data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []));
   const toMarkdownExtensions =
     /** @type ToMarkdownExtension[] */
     // @ts-expect-error type of data is missing toMarkdownExtensions
     (data.toMarkdownExtensions || (data.toMarkdownExtensions = []));
-  micromarkExtensions.push(
-    frontmatter(...Object.values(frontmatter_options)),
-    svelte(),
-    mdxMd(),
-    gfm(),
-  );
-  fromMarkdownExtensions.push(
-    frontmatterFromMarkdown(...Object.values(frontmatter_options)),
-    svelteFromMarkdown(),
-    gfmFromMarkdown(),
-  );
-  toMarkdownExtensions.push(
-    frontmatterToMarkdown(...Object.values(frontmatter_options)),
-    svelteToMarkdown(),
-    gfmToMarkdown(),
-  );
+  micromarkExtensions.push(mdsv(), frontmatter());
+  // fromMarkdownExtensions.push(frontmatterFromMarkdown());
+  // toMarkdownExtensions.push(frontmatterToMarkdown());
 }

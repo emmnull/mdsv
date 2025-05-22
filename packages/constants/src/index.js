@@ -1,20 +1,26 @@
-export const constructs = /** @type {const} */ ({
+/** Token and node types related to Svelte syntaxes in markdown. */
+export const tokens = /** @type const */ ({
   /**
    * ```markdown
-   *   |
    * > | {...}
-   *     ^^^^^
-   *   |
+   *     ^   ^
    * ```
    */
-  expressionFlow: 'mdsvExpressionFlow',
+  marker: 'mdsvMarker',
   /**
    * ```markdown
    * > | ...{...}...
    *        ^^^^^
    * ```
    */
-  expressionText: 'mdsvExpressionText',
+  textExpression: 'mdsvTextExpression',
+  /**
+   * ```markdown
+   * > | {...}
+   *      ^^^
+   * ```
+   */
+  expressionValue: 'mdsvExpressionValue',
   /**
    * ```markdown
    *   |
@@ -23,14 +29,55 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  atTagFlow: 'mdsvAtTagFlow',
+  flowTag: 'mdsvFlowTag',
   /**
    * ```markdown
    * > | ...{@...}....
    *        ^^^^^^
    * ```
    */
-  atTagText: 'mdsvAtTagText',
+  textTag: 'mdsvTextTag',
+  /**
+   * ```markdown
+   * > | {@...}
+   *      ^
+   * ```
+   */
+  tagSymbol: 'mdsvTagSymbol',
+  /**
+   * ```markdown
+   * > | {@foo}
+   *       ^^^
+   * ```
+   */
+  tagKeyword: 'mdsvTagKeyword',
+  /**
+   * ```markdown
+   * > | {@foo ...}
+   *           ^^^
+   * ```
+   */
+  tagExpression: 'mdsvTagExpression',
+  /**
+   * ```markdown
+   * > | {@foo ...}
+   *      ^^^^^^^^
+   * ```
+   */
+  tagValue: 'mdsvTagValue',
+  /**
+   * ```markdown
+   *   |
+   * > | {#...}
+   *     ^^^^^^
+   * > | ...
+   *     ^^^
+   * > | {/...}
+   *     ^^^^^^
+   *   |
+   * ```
+   */
+  flowBlock: 'mdsvFlowBlock',
   /**
    * ```markdown
    *   |
@@ -49,7 +96,14 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  blockFlow: 'mdsvBlockFlow',
+  flowBlockTag: 'mdsvFlowBlockTag',
+  /**
+   * ```markdown
+   * > | ...{#...}...{/...}...
+   *        ^^^^^^^^^^^^^^^
+   * ```
+   */
+  textBlock: 'mdsvTextBlock',
   /**
    * ```markdown
    * > | ...{#...}...
@@ -62,7 +116,71 @@ export const constructs = /** @type {const} */ ({
    *        ^^^^^^
    * ```
    */
-  blockText: 'mdsvBlockText',
+  textBlockTag: 'mdsvTextBlockTag',
+  /**
+   * ```markdown
+   * > | ...{#...}...
+   *         ^
+   *
+   * > | ...{:...}...
+   *         ^
+   *
+   * > | ...{/...}...
+   *         ^
+   * ```
+   */
+  blockTagSymbol: 'mdsvBlockTagSymbol',
+  /**
+   * ```markdown
+   * > | ...{#foo}...
+   *          ^^^
+   *
+   * > | ...{:foo}...
+   *          ^^^
+   *
+   * > | ...{/foo}...
+   *          ^^^
+   * ```
+   */
+  blockTagName: 'mdsvBlockTagName',
+  /**
+   * ```markdown
+   * > | ...{#foo ...}...
+   *              ^^^
+   *
+   * > | ...{:foo ...}...
+   *              ^^^
+   *
+   * > | ...{/foo ...}...
+   *              ^^^
+   * ```
+   */
+  blockTagExpression: 'mdsvBlockTagExpression',
+  /**
+   * ```markdown
+   * > | ...{#foo ...}...
+   *         ^^^^^^^^
+   *
+   * > | ...{:foo ...}...
+   *         ^^^^^^^^
+   *
+   * > | ...{/foo ...}...
+   *         ^^^^^^^^
+   * ```
+   */
+  blockTagValue: 'mdsvBlockTagValue',
+  /**
+   * ```markdown
+   *   |
+   * > | <foo>
+   *     ^^^^^
+   * > | ...
+   *     ^^^
+   * > | </foo>
+   *     ^^^^^^
+   * ```
+   */
+  flowElement: 'mdsvFlowElement',
   /**
    * ```markdown
    *   |
@@ -71,137 +189,21 @@ export const constructs = /** @type {const} */ ({
    *   |
    * ```
    */
-  elementFlow: 'mdsvFlow',
+  flowElementTag: 'mdsvFlowElementTag',
   /**
    * ```markdown
    * > | ...<foo>...
    *        ^^^^^
    * ```
    */
-  elementText: 'mdsvFlow',
-});
-
-/** Token and node types related to Svelte syntaxes in markdown. */
-export const types = /** @type const */ ({
-  /**
-   * ```markdown
-   * > | {...}
-   *     ^   ^
-   * ```
-   */
-  marker: 'mdsvMarker',
-  /**
-   * ```markdown
-   * > | {...}
-   *     ^^^^^
-   * ```
-   */
-  expression: 'mdsvExpression',
-  /**
-   * ```markdown
-   * > | {...}
-   *      ^^^
-   * ```
-   */
-  expressionValue: 'mdsvExpressionValue',
-  /**
-   * ```markdown
-   * > | {@...}
-   *     ^^^^^^
-   * ```
-   */
-  atTag: 'mdsvAtTag',
-  /**
-   * ```markdown
-   * > | {@...}
-   *      ^
-   * ```
-   */
-  atTagMarker: 'mdsvTagMarker',
-  /**
-   * ```markdown
-   * > | {@foo}
-   *       ^^^
-   * ```
-   */
-  atTagName: 'mdsvTagName',
-  /**
-   * ```markdown
-   * > | {@foo ...}
-   *           ^^^
-   * ```
-   */
-  atTagValue: 'mdsvTagValue',
-  /**
-   * ```markdown
-   * > | {#...}
-   *     ^^^^^^
-   * > | ...
-   *     ^^^
-   * > | {/...}
-   *     ^^^^^^
-   * ```
-   */
-  block: 'mdsvBlock',
-  /**
-   * ```markdown
-   * > | {#...}
-   *     ^^^^^^
-   *
-   * > | {:...}
-   *     ^^^^^^
-   *
-   * > | {/...}
-   *     ^^^^^^
-   * ```
-   */
-  blockTag: 'mdsvBlockTag',
-  /**
-   * ```markdown
-   * > | {#...}
-   *      ^
-   *
-   * > | {:...}
-   *      ^
-   *
-   * > | {/...}
-   *      ^
-   * ```
-   */
-  blockTagMarker: 'mdsvBlockTagMarker',
-  /**
-   * ```markdown
-   * > | {#foo}
-   *       ^^^
-   *
-   * > | {:foo}
-   *       ^^^
-   *
-   * > | {/foo}
-   *       ^^^
-   * ```
-   */
-  blockTagName: 'mdsvBlockTagName',
-  /**
-   * ```markdown
-   * > | {#foo ...}
-   *           ^^^
-   *
-   * > | {:foo ...}
-   *           ^^^
-   *
-   * > | {/foo ...}
-   *           ^^^
-   * ```
-   */
-  blockTagValue: 'mdsvBlockTagValue',
+  textElement: 'mdsvTextElement',
   /**
    * ```markdown
    * > | <foo>
    *     ^^^^^
    * ```
    */
-  elementTag: 'mdsvElementTag',
+  textElementTag: 'mdsvTextElementTag',
   /**
    * ```markdown
    * > | <foo>
@@ -220,6 +222,15 @@ export const types = /** @type const */ ({
    * ```markdown
    * > | <foo bar>
    *          ^^^
+   *
+   * > | <foo {bar}>
+   *          ^^^^^
+   *
+   * > | <foo bar=baz>
+   *          ^^^^^^^
+   *
+   * > | <foo bar:baz>
+   *          ^^^^^^^
    * ```
    */
   elementTagAttribute: 'mdsvElementTagAttribute',
@@ -233,6 +244,20 @@ export const types = /** @type const */ ({
    */
   elementRaw: 'mdsvElementRaw',
 });
+
+export const nodes = /** @type {const} */ ({
+  textExpression: 'mdsvTextExpression',
+  textTag: 'mdsvTextTag',
+  flowTag: 'mdsvFlowTag',
+  textBlock: 'mdsvTextBlock',
+  flowBlock: 'mdsvFlowBlock',
+  textElement: 'mdsvTextElement',
+  flowElement: 'mdsvFlowElement',
+  textRaw: 'mdsvTextRaw',
+  flowRaw: 'mdsvFlowRaw',
+});
+
+export const blockTagTypes = /** @type {const} */ (['open', 'branch', 'close']);
 
 /**
  * HTML element names for elements that do not have end tags nor should have

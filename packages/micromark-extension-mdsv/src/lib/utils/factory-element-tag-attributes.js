@@ -1,6 +1,6 @@
 /** @import {State, Code, Effects, Tokenizer, TokenType} from 'micromark-util-types'; */
 
-import { assert } from '@mdsv/utils';
+import { ok as assert } from 'devlop';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,

@@ -1,7 +1,8 @@
+import dedent from 'dedent';
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { mdsvBlock, mdsvBlockHtml } from '../lib/mdsv-block.js';
+import { mdsvBlock, mdsvBlockHtml } from '../src/lib/block.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {
@@ -29,8 +30,17 @@ describe('micromark extension tokenizes svelte blocks in markdown', () => {
 
   it('suports flow blocks', () => {
     strictEqual(
-      micromark('{#if foo}\nHello world\n{/if}', options),
-      '{#if foo}\n<p>Hello world</p>\n{/if}',
+      micromark(
+        dedent`
+				{#if foo}
+					Hello world
+				{/if}`,
+        options,
+      ),
+      dedent`
+			{#if foo}
+			<p>Hello world</p>
+			{/if}`,
     );
   });
 });

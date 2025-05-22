@@ -1,7 +1,7 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
 
-import { constructs, types } from '@mdsv/constants';
-import { assert } from '@mdsv/utils';
+import { tokens } from '@mdsv/constants';
+import { ok as assert } from 'devlop';
 import { codes } from 'micromark-util-symbol';
 import { factoryExpression } from './utils/factory-expression.js';
 
@@ -11,7 +11,7 @@ export function mdsvExpression() {
     text: {
       [codes.leftCurlyBrace]: {
         concrete: true,
-        name: constructs.expressionText,
+        name: tokens.textExpression,
         tokenize: tokenizeExpressionText,
       },
     },
@@ -22,7 +22,7 @@ export function mdsvExpression() {
 export function mdsvExpressionHtml() {
   return {
     exit: {
-      [types.expression](token) {
+      [tokens.textExpression](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -43,10 +43,10 @@ function tokenizeExpressionText(effects, ok, nok) {
    */
   function start(code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
-    effects.enter(types.expression);
-    effects.enter(types.marker);
+    effects.enter(tokens.textExpression);
+    effects.enter(tokens.marker);
     effects.consume(code);
-    effects.exit(types.marker);
+    effects.exit(tokens.marker);
     return noTag;
   }
 
@@ -67,7 +67,7 @@ function tokenizeExpressionText(effects, ok, nok) {
     ) {
       return nok(code);
     }
-    effects.enter(types.expressionValue);
+    effects.enter(tokens.expressionValue);
     return factoryExpression(effects, end, nok, codes.rightCurlyBrace)(code);
   }
 
@@ -81,11 +81,11 @@ function tokenizeExpressionText(effects, ok, nok) {
    */
   function end(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
-    effects.exit(types.expressionValue);
-    effects.enter(types.marker);
+    effects.exit(tokens.expressionValue);
+    effects.enter(tokens.marker);
     effects.consume(code);
-    effects.exit(types.marker);
-    effects.exit(types.expression);
+    effects.exit(tokens.marker);
+    effects.exit(tokens.textExpression);
     return ok(code);
   }
 }

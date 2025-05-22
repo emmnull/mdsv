@@ -1,7 +1,7 @@
 /** @import {Code, Construct, Extension, HtmlExtension, Resolver, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
 
-import { constructs, types } from '@mdsv/constants';
-import { assert } from '@mdsv/utils';
+import { tokens } from '@mdsv/constants';
+import { ok as assert } from 'devlop';
 import { blankLine } from 'micromark-core-commonmark';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
@@ -19,15 +19,14 @@ export function mdsvElement() {
     flow: {
       [codes.lessThan]: {
         concrete: true,
-        name: constructs.elementFlow,
+        name: tokens.flowElement,
         tokenize: tokenizeElementFlow,
-        // resolveTo,
       },
     },
     text: {
       [codes.lessThan]: {
         concrete: true,
-        name: constructs.elementText,
+        name: tokens.textElement,
         tokenize: tokenizeElementText,
       },
     },
@@ -38,10 +37,13 @@ export function mdsvElement() {
 export function mdsvElementHtml() {
   return {
     exit: {
-      [types.elementTag](token) {
+      [tokens.flowElementTag](token) {
         this.raw(this.sliceSerialize(token));
       },
-      [types.elementRaw](token) {
+      [tokens.textElementTag](token) {
+        this.raw(this.sliceSerialize(token));
+      },
+      [tokens.elementRaw](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -86,10 +88,10 @@ function tokenizeElementFlow(effects, ok, nok) {
       effects,
       endAfter,
       nok,
-      types.elementTag,
-      types.elementTagMarker,
-      types.elementTagName,
-      types.elementTagAttribute,
+      tokens.flowElementTag,
+      tokens.elementTagMarker,
+      tokens.elementTagName,
+      tokens.elementTagAttribute,
     )(code);
   }
 
@@ -109,7 +111,7 @@ function tokenizeElementFlow(effects, ok, nok) {
       self.mdsvElementTagName &&
       htmlRawNames.includes(self.mdsvElementTagName)
     ) {
-      effects.enter(types.elementRaw);
+      effects.enter(tokens.elementRaw);
       return raw(code);
     }
     if (markdownSpace(code)) {
@@ -356,11 +358,11 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    */
   function start(code) {
     assert(code === codes.lessThan, 'expected `<`');
-    effects.exit(types.elementRaw);
-    effects.enter(types.elementTag);
-    effects.enter(types.elementTagMarker);
+    effects.exit(tokens.elementRaw);
+    effects.enter(tokens.flowElementTag);
+    effects.enter(tokens.elementTagMarker);
     effects.consume(code);
-    effects.exit(types.elementTagMarker);
+    effects.exit(tokens.elementTagMarker);
     return startAfter;
   }
 
@@ -375,7 +377,7 @@ function tokenizeRawCloseTag(effects, ok, nok) {
   function startAfter(code) {
     if (code === codes.slash) {
       effects.consume(code);
-      effects.enter(types.elementTagName);
+      effects.enter(tokens.elementTagName);
       return tagName;
     }
     return nok(code);
@@ -399,7 +401,7 @@ function tokenizeRawCloseTag(effects, ok, nok) {
       if (index < rawName.length) {
         return tagName;
       }
-      effects.exit(types.elementTagName);
+      effects.exit(tokens.elementTagName);
       return end;
     }
     return nok(code);
@@ -415,10 +417,10 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    */
   function end(code) {
     if (code === codes.greaterThan) {
-      effects.enter(types.elementTagMarker);
+      effects.enter(tokens.elementTagMarker);
       effects.consume(code);
-      effects.exit(types.elementTagMarker);
-      effects.exit(types.elementTag);
+      effects.exit(tokens.elementTagMarker);
+      effects.exit(tokens.flowElementTag);
       return ok;
     }
     return nok(code);
@@ -466,10 +468,10 @@ function tokenizeElementText(effects, ok, nok) {
       effects,
       ok,
       nok,
-      types.elementTag,
-      types.elementTagMarker,
-      types.elementTagName,
-      types.elementTagAttribute,
+      tokens.textElementTag,
+      tokens.elementTagMarker,
+      tokens.elementTagName,
+      tokens.elementTagAttribute,
     )(code);
   }
 }

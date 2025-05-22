@@ -3,7 +3,7 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { mdsvElement, mdsvElementHtml } from '../lib/mdsv-element.js';
+import { mdsvElement, mdsvElementHtml } from '../src/lib/element.js';
 
 /** @type {Options} */
 const options = {

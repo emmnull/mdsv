@@ -1,12 +1,12 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { mdsvAtTag, mdsvAtTagHtml } from '../lib/mdsv-tag.js';
+import { mdsvTag, mdsvTagHtml } from '../src/lib/tag.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {
-  extensions: [mdsvAtTag()],
-  htmlExtensions: [mdsvAtTagHtml()],
+  extensions: [mdsvTag()],
+  htmlExtensions: [mdsvTagHtml()],
   allowDangerousHtml: true,
 };
 

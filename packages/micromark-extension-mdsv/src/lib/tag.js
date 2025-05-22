@@ -1,24 +1,24 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
 
-import { constructs, types } from '@mdsv/constants';
+import { tokens } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
-import { factoryAtTag } from './utils/factory-at-tag.js';
+import { factoryTag } from './utils/factory-tag.js';
 
 /** @returns {Extension} */
-export function mdsvAtTag() {
+export function mdsvTag() {
   return {
     flow: {
       [codes.leftCurlyBrace]: {
-        name: constructs.atTagFlow,
+        name: tokens.flowTag,
         tokenize: tokenizeTagFlow,
         concrete: true,
       },
     },
     text: {
       [codes.leftCurlyBrace]: {
-        name: constructs.atTagText,
+        name: tokens.textTag,
         tokenize: tokenizeTagText,
         concrete: true,
       },
@@ -27,10 +27,13 @@ export function mdsvAtTag() {
 }
 
 /** @returns {HtmlExtension} */
-export function mdsvAtTagHtml() {
+export function mdsvTagHtml() {
   return {
     exit: {
-      [types.atTag](token) {
+      [tokens.flowTag](token) {
+        this.raw(this.sliceSerialize(token));
+      },
+      [tokens.textTag](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -50,15 +53,16 @@ function tokenizeTagFlow(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryAtTag(
+    return factoryTag(
       effects,
       endAfter,
       nok,
-      types.atTag,
-      types.marker,
-      types.atTagMarker,
-      types.atTagName,
-      types.atTagValue,
+      tokens.flowTag,
+      tokens.marker,
+      tokens.tagValue,
+      tokens.tagSymbol,
+      tokens.tagKeyword,
+      tokens.tagExpression,
     )(code);
   }
 
@@ -90,15 +94,16 @@ function tokenizeTagText(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    return factoryAtTag(
+    return factoryTag(
       effects,
       ok,
       nok,
-      types.atTag,
-      types.marker,
-      types.atTagMarker,
-      types.atTagName,
-      types.atTagValue,
+      tokens.textTag,
+      tokens.marker,
+      tokens.tagValue,
+      tokens.tagSymbol,
+      tokens.tagKeyword,
+      tokens.tagExpression,
     )(code);
   }
 }

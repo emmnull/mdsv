@@ -1,6 +1,6 @@
 /** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension, Token} from 'micromark-util-types' */
 
-import { constructs, types } from '@mdsv/constants';
+import { tokens } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
@@ -20,14 +20,14 @@ export function mdsvBlock() {
     flow: {
       [codes.leftCurlyBrace]: {
         concrete: true,
-        name: constructs.blockFlow,
+        name: tokens.flowBlock,
         tokenize: tokenizeBlockFlow,
       },
     },
     text: {
       [codes.leftCurlyBrace]: {
         concrete: true,
-        name: constructs.blockText,
+        name: tokens.textBlock,
         tokenize: tokenizeBlockText,
       },
     },
@@ -38,7 +38,10 @@ export function mdsvBlock() {
 export function mdsvBlockHtml() {
   return {
     exit: {
-      [types.blockTag](token) {
+      [tokens.flowBlockTag](token) {
+        this.raw(this.sliceSerialize(token));
+      },
+      [tokens.textBlockTag](token) {
         this.raw(this.sliceSerialize(token));
       },
     },
@@ -66,11 +69,12 @@ function tokenizeBlockFlow(effects, ok, nok) {
       effects,
       endAfter,
       nok,
-      types.blockTag,
-      types.marker,
-      types.blockTagMarker,
-      types.blockTagName,
-      types.blockTagValue,
+      tokens.flowBlockTag,
+      tokens.marker,
+      tokens.blockTagValue,
+      tokens.blockTagSymbol,
+      tokens.blockTagName,
+      tokens.blockTagExpression,
     )(code);
   }
 
@@ -117,11 +121,12 @@ function tokenizeBlockText(effects, ok, nok) {
       effects,
       ok,
       nok,
-      types.blockTag,
-      types.marker,
-      types.blockTagMarker,
-      types.blockTagName,
-      types.blockTagValue,
+      tokens.textBlockTag,
+      tokens.marker,
+      tokens.blockTagValue,
+      tokens.blockTagSymbol,
+      tokens.blockTagName,
+      tokens.blockTagExpression,
     )(code);
   }
 }

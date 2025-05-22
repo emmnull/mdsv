@@ -5,6 +5,18 @@
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./dist/index.d.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build",
+    "build:watch": "tsc --build --clean && tsc --build --watch --preserveWatchOutput",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   }
 }

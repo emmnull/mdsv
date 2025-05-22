@@ -13,21 +13,26 @@
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "files": [
-    "dist"
+    "dist",
+    "src/**/*.d.ts"
   ],
   "scripts": {
     "build": "tsc --build --clean && tsc --build",
-    "dev": "node --test --watch",
-    "test": "node --test"
+    "build:watch": "tsc --build --clean && tsc --build --watch --preserveWatchOutput",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "devDependencies": {
     "@mdsv/constants": "workspace:^",
-    "@mdsv/utils": "workspace:^",
     "micromark": "^4.0.2",
     "micromark-core-commonmark": "^2.0.3",
+    "micromark-extension-frontmatter": "^2.0.0",
     "micromark-factory-space": "^2.0.1",
     "micromark-util-character": "^2.1.1",
     "micromark-util-combine-extensions": "^2.0.1",

@@ -1,17 +1,40 @@
-import { types } from '@mdsv/constants';
+import { tokens } from '@mdsv/constants';
 import 'micromark-util-types';
 import { Token } from 'micromark-util-types';
 
-type SvelteTokenTypeMap = {
-  [K in (typeof types)[keyof typeof types]]: Token;
+type MdsvTokenTypeMap = {
+  [K in (typeof tokens)[keyof typeof tokens]]: Token;
 };
 
-type SvelteTokenizeContext = {
+type MdsvTokenizeContext = {
   mdsvElementTagName?: string;
-  // mdsvElementRaw?: boolean;
 };
 
 declare module 'micromark-util-types' {
-  interface TokenTypeMap extends SvelteTokenTypeMap {}
-  interface TokenizeContext extends SvelteTokenizeContext {}
+  interface Token {
+    /**
+     * If inside a closing block tag. Else we are either inside an opening or
+     * branching block tag.
+     */
+    _blockClose?: boolean;
+    /**
+     * If inside a branching block tag. Else we are either inside an opening or
+     * closing block tag.
+     */
+    _blockBranch?: boolean;
+    /**
+     * If inside a closing element tag token. When true in conjunction with
+     * _elementOpen means inside a self-closing element tag.
+     */
+    _elementClose?: boolean;
+    /**
+     * If inside an opening element tag token. When true in conjunction with
+     * _elementClose means inside a self-closing element tag.
+     */
+    _elementOpen?: boolean;
+  }
+
+  interface TokenTypeMap extends MdsvTokenTypeMap {}
+
+  interface TokenizeContext extends MdsvTokenizeContext {}
 }

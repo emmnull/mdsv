@@ -1,7 +1,7 @@
 import { micromark } from 'micromark';
 import { strictEqual } from 'node:assert';
 import { describe, it } from 'node:test';
-import { mdsv, mdsvHtml } from '../index.js';
+import { mdsv, mdsvHtml } from '../src/index.js';
 
 /** @type {import('micromark-util-types').Options} */
 const options = {

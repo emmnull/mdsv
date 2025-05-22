@@ -9,13 +9,13 @@
 
 Handle svelte tokens as nodes inside markdown abstract syntax tree (MDAST).
 
+> [!NOTE]
+> Most sub-utils herein work by injecting a `<script module>` with data defined under a customizable key.
+> If a `<script module>` element is already found in the markdown, contents will be coalesced.
+
 ## Metadata
 
 Parse front matter into Svelte `module` metadata.
-
-> [!NOTE]
-> This works by injecting a `<script module>` with the parsed front matter defined under a customizable key.
-> If a `<script module>` element is already found in the markdown, both contents will be coalesced.
 
 ## Custom component
 

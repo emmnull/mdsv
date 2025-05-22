@@ -1,6 +1,9 @@
-/** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension, Token, Effects, TokenType} from 'micromark-util-types' */
+/**
+ * @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension, Token, Effects, TokenType, Code} from 'micromark-util-types'
+ * @import {blockTagTypes} from '@mdsv/constants'
+ */
 
-import { assert } from '@mdsv/utils';
+import { ok as assert } from 'devlop';
 import { factorySpace } from 'micromark-factory-space';
 import {
   asciiAlpha,
@@ -10,35 +13,42 @@ import {
 import { codes, types as coreTypes } from 'micromark-util-symbol';
 import { factoryExpression } from './factory-expression.js';
 
-const blockMarkerType = /** @type {const} */ ({
-  [codes.numberSign]: 'open',
-  [codes.colon]: 'branch',
-  [codes.slash]: 'close',
-});
+// const blockMarkerType =
+//   /** @type {const} @satisfies {Record<Code, typeof blockTagTypes[number]>} */ ({
+//     [codes.numberSign]: 'open',
+//     [codes.colon]: 'branch',
+//     [codes.slash]: 'close',
+//   });
 
 /**
  * @param {Effects} effects
  * @param {State} nok
  * @param {State} ok
  * @param {TokenType} nok
- * @param {TokenType} tagType
+ * @param {TokenType} type
  * @param {TokenType} markerType
- * @param {TokenType} tagMarkerType
- * @param {TokenType} tagNameType
- * @param {TokenType} tagValueType
+ * @param {TokenType} valueType
+ * @param {TokenType} symbolType
+ * @param {TokenType} nameType
+ * @param {TokenType} expressionType
  */
 export function factoryBlockTag(
   effects,
   ok,
   nok,
-  tagType,
+  type,
   markerType,
-  tagMarkerType,
-  tagNameType,
-  tagValueType,
+  valueType,
+  symbolType,
+  nameType,
+  expressionType,
 ) {
-  /** @type {(typeof blockMarkerType)[keyof typeof blockMarkerType]} */
-  let type;
+  // /** @type {(typeof blockMarkerType)[keyof typeof blockMarkerType]} */
+  // let role;
+  /** @type {boolean} */
+  let close;
+  /** @type {boolean} */
+  let branch;
 
   return start;
 
@@ -52,10 +62,11 @@ export function factoryBlockTag(
    */
   function start(code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
-    effects.enter(tagType);
+    effects.enter(type);
     effects.enter(markerType);
     effects.consume(code);
     effects.exit(markerType);
+    // effects.enter(valueType);
     return blockTagMarker;
   }
 
@@ -79,10 +90,12 @@ export function factoryBlockTag(
     ) {
       return nok(code);
     }
-    effects.enter(tagMarkerType);
+    close = code === codes.slash;
+    branch = code === codes.colon;
+    withTokenData(effects.enter(symbolType));
     effects.consume(code);
-    effects.exit(tagMarkerType);
-    type = blockMarkerType[code];
+    effects.exit(symbolType);
+    withTokenData(effects.enter(valueType));
     return nameStart;
   }
 
@@ -100,7 +113,7 @@ export function factoryBlockTag(
    */
   function nameStart(code) {
     if (asciiAlpha(code)) {
-      effects.enter(tagNameType);
+      withTokenData(effects.enter(nameType));
       effects.consume(code);
       return name;
     }
@@ -124,7 +137,7 @@ export function factoryBlockTag(
       effects.consume(code);
       return name;
     }
-    effects.exit(tagNameType);
+    effects.exit(nameType);
     return nameAfter(code);
   }
 
@@ -154,10 +167,10 @@ export function factoryBlockTag(
       effects.consume(code);
       return nameAfter;
     }
-    effects.enter(tagValueType);
+    withTokenData(effects.enter(expressionType));
     return factoryExpression(
       effects,
-      valueAfter,
+      expressionAfter,
       nok,
       codes.rightCurlyBrace,
     )(code);
@@ -171,9 +184,9 @@ export function factoryBlockTag(
    *
    * @type {State}
    */
-  function valueAfter(brace) {
+  function expressionAfter(brace) {
     assert(brace === codes.rightCurlyBrace, 'expected `}`');
-    effects.exit(tagValueType);
+    effects.exit(expressionType);
     return end(brace);
   }
 
@@ -187,10 +200,18 @@ export function factoryBlockTag(
    */
   function end(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
+    effects.exit(valueType);
     effects.enter(markerType);
     effects.consume(code);
     effects.exit(markerType);
-    effects.exit(tagType);
+    withTokenData(effects.exit(type));
     return ok;
+  }
+
+  /** @param {Token} token */
+  function withTokenData(token) {
+    token._blockBranch = branch;
+    token._blockClose = close;
+    return token;
   }
 }

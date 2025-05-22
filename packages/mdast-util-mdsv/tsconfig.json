@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "references": [
     { "path": "../constants" },
-    { "path": "../utils" },
     { "path": "../micromark-extension-mdsv" }
   ],
   "compilerOptions": {
@@ -10,6 +9,6 @@
     "rootDir": "./src",
     "composite": true
   },
-  "include": ["src"],
+  "include": ["src/**/*.js", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "test"]
 }

@@ -1,6 +1,6 @@
 /** @import {Effects,State, TokenType} from 'micromark-util-types' */
 
-import { assert } from '@mdsv/utils';
+import { ok as assert } from 'devlop';
 import {
   asciiAlpha,
   asciiAlphanumeric,
@@ -14,21 +14,23 @@ import { factoryExpression } from './factory-expression.js';
  * @param {Effects} effects
  * @param {State} ok
  * @param {State} nok
- * @param {TokenType} tagType
+ * @param {TokenType} type
  * @param {TokenType} markerType
- * @param {TokenType} tagMarkerType
- * @param {TokenType} tagNameType
- * @param {TokenType} tagValueType
+ * @param {TokenType} valueType
+ * @param {TokenType} symbolType
+ * @param {TokenType} nameType
+ * @param {TokenType} expressionType
  */
-export function factoryAtTag(
+export function factoryTag(
   effects,
   ok,
   nok,
-  tagType,
+  type,
   markerType,
-  tagMarkerType,
-  tagNameType,
-  tagValueType,
+  valueType,
+  symbolType,
+  nameType,
+  expressionType,
 ) {
   return start;
 
@@ -42,10 +44,11 @@ export function factoryAtTag(
    */
   function start(code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
-    effects.enter(tagType);
+    effects.enter(type);
     effects.enter(markerType);
     effects.consume(code);
     effects.exit(markerType);
+    // effects.enter(valueType);
     return tagMarker;
   }
 
@@ -61,9 +64,10 @@ export function factoryAtTag(
     if (code !== codes.atSign) {
       return nok(code);
     }
-    effects.enter(tagMarkerType);
+    effects.enter(symbolType);
     effects.consume(code);
-    effects.exit(tagMarkerType);
+    effects.exit(symbolType);
+    effects.enter(valueType);
     return nameStart;
   }
 
@@ -77,7 +81,7 @@ export function factoryAtTag(
    */
   function nameStart(code) {
     if (asciiAlpha(code)) {
-      effects.enter(tagNameType);
+      effects.enter(nameType);
       effects.consume(code);
       return name;
     }
@@ -97,8 +101,8 @@ export function factoryAtTag(
       effects.consume(code);
       return name;
     }
-    effects.exit(tagNameType);
-    return afterName(code);
+    effects.exit(nameType);
+    return nameAfter(code);
   }
 
   /**
@@ -109,7 +113,7 @@ export function factoryAtTag(
    *
    * @type {State}
    */
-  function afterName(code) {
+  function nameAfter(code) {
     if (code === codes.eof) {
       return nok(code);
     }
@@ -118,12 +122,12 @@ export function factoryAtTag(
     }
     if (markdownSpace(code) || markdownLineEnding(code)) {
       effects.consume(code);
-      return afterName;
+      return nameAfter;
     }
-    effects.enter(tagValueType);
+    effects.enter(expressionType);
     return factoryExpression(
       effects,
-      afterValue,
+      expressionAfter,
       nok,
       codes.rightCurlyBrace,
     )(code);
@@ -137,9 +141,9 @@ export function factoryAtTag(
    *
    * @type {State}
    */
-  function afterValue(code) {
+  function expressionAfter(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
-    effects.exit(tagValueType);
+    effects.exit(expressionType);
     return end(code);
   }
 
@@ -155,10 +159,11 @@ export function factoryAtTag(
    */
   function end(code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
+    effects.exit(valueType);
     effects.enter(markerType);
     effects.consume(code);
     effects.exit(markerType);
-    effects.exit(tagType);
+    effects.exit(type);
     return ok;
   }
 }

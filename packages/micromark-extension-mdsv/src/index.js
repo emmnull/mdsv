@@ -1,13 +1,16 @@
+/// <reference path="./micromark.d.ts" />
+
 /** @import {Extension, HtmlExtension} from 'micromark-util-types' */
 
+import { frontmatter } from 'micromark-extension-frontmatter';
 import {
   combineExtensions,
   combineHtmlExtensions,
 } from 'micromark-util-combine-extensions';
-import { mdsvBlock, mdsvBlockHtml } from './lib/mdsv-block.js';
-import { mdsvElement, mdsvElementHtml } from './lib/mdsv-element.js';
-import { mdsvExpression, mdsvExpressionHtml } from './lib/mdsv-expression.js';
-import { mdsvAtTag, mdsvAtTagHtml } from './lib/mdsv-tag.js';
+import { mdsvBlock, mdsvBlockHtml } from './lib/block.js';
+import { mdsvElement, mdsvElementHtml } from './lib/element.js';
+import { mdsvExpression, mdsvExpressionHtml } from './lib/expression.js';
+import { mdsvTag, mdsvTagHtml } from './lib/tag.js';
 
 /**
  * @param {object} [options]
@@ -15,9 +18,9 @@ import { mdsvAtTag, mdsvAtTagHtml } from './lib/mdsv-tag.js';
  */
 export function mdsv(options) {
   return combineExtensions([
-    // frontmatter(options?.frontmatter),
+    frontmatter(),
     mdsvExpression(),
-    mdsvAtTag(),
+    mdsvTag(),
     mdsvBlock(),
     mdsvElement(),
   ]);
@@ -25,14 +28,13 @@ export function mdsv(options) {
 
 /**
  * @param {object} [options]
- * @param {Options} options.frontmatter
+ * @param {object} options.frontmatter
  * @returns {HtmlExtension}
  */
 export function mdsvHtml(options) {
   return combineHtmlExtensions([
-    // frontmatterHtml(options?.frontmatter),
     mdsvExpressionHtml(),
-    mdsvAtTagHtml(),
+    mdsvTagHtml(),
     mdsvBlockHtml(),
     mdsvElementHtml(),
   ]);

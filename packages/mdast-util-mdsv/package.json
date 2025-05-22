@@ -12,21 +12,37 @@
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "src/**/*.d.ts"
   ],
   "scripts": {
-    "dev": "node --test --watch",
-    "test": "node --test"
+    "build": "tsc --build --clean && tsc --build",
+    "build:watch": "tsc --build --clean && tsc --build --watch --preserveWatchOutput",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
   },
   "devDependencies": {
     "@mdsv/constants": "workspace:^",
-    "@mdsv/utils": "workspace:^",
+    "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
+    "escape-string-regexp": "^5.0.0",
+    "mdast-builder": "^1.1.1",
     "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-frontmatter": "^2.0.1",
     "mdast-util-to-markdown": "^2.1.2",
+    "micromark-extension-frontmatter": "^2.0.0",
     "micromark-extension-mdsv": "workspace:^",
+    "micromark-util-types": "^2.0.2",
     "toml": "^3.0.0",
+    "unist-builder": "^4.0.0",
+    "unist-util-remove-position": "^5.0.0",
     "yaml": "^2.7.1"
   }
 }
