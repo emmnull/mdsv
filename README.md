@@ -9,9 +9,9 @@
 
 Mdsv is a utility suite built on the [Unified](https://unifiedjs.com/) ecosystem and aimed at bringing fussless markdown integration to your [Svelte](https://svelte.dev/) projects.
 
-Its main goal is to let you write Svelte markup and expressions inside markdown documents. _It does not strive to perform any strong validation whatsoever and is instead mostly concerned with structural markers, leaving the bulk of semantic validation to the Svelte parser._
+Its main goal is to let you write Svelte markup and expressions inside markdown documents. _It does not strive to perform any strong validation whatsoever and is instead mostly concerned with structural markers, leaving the bulk of semantic validation to the Svelte parser._ (Simplifying the parsing thusly also means you should expect _garbage in, garbage out_).
 
-At its core, it consists in granular integrations for [Micromark](https://github.com/micromark/micromark) and [Remark](https://github.com/remarkjs/remark) to support _basic_ tokenization and serialization of Svelte-related syntax.
+At its core, the packages consist in granular integrations ranging [Micromark](https://github.com/micromark/micromark) and [Remark](https://github.com/remarkjs/remark) to support _basic_ tokenization and serialization of Svelte-related syntax.
 
 ## Packages
 
@@ -30,3 +30,11 @@ Remark plugin to support svelte syntax, front matter metadata, as well as minima
 ### [`svelte-preprocess-mdsv`](./packages/svelte-preprocess-mdsv/)
 
 Basic svelte preprocessor built on top of the [`remark-mdsv`](./packages/remark-mdsv/) to add support for markdown modules.
+
+## References
+
+[CommonMark spec](https://spec.commonmark.org/0.31.2/)
+
+[Micromark implementation](https://github.com/micromark/micromark)
+
+[MDX](https://mdxjs.com/)
