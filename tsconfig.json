@@ -3,7 +3,6 @@
     "checkJs": true,
     "allowJs": true,
     "declaration": true,
-    "emitDeclarationOnly": false,
     "strict": true,
     "skipLibCheck": true,
     "module": "nodenext",
