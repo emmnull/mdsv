@@ -1,8 +1,8 @@
 /// <reference path="./mdast.d.ts" />
 
 /**
- * @import {Extension, CompileContext, Handle} from 'mdast-util-from-markdown'
- * @import {Options, Handle as ToMarkdown} from 'mdast-util-to-markdown'
+ * @import {Extension} from 'mdast-util-from-markdown'
+ * @import {Options} from 'mdast-util-to-markdown'
  */
 
 import { mdsvBlockFromMarkdown, mdsvBlockToMarkdown } from './lib/block.js';

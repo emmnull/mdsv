@@ -1,6 +1,7 @@
 {
   "name": "@mdsv/constants",
   "version": "0.0.0-dev",
+  "private": true,
   "license": "MIT",
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
