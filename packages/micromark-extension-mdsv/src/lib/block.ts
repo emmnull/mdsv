@@ -1,18 +1,20 @@
-/** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension, Token} from 'micromark-util-types' */
-
 import { tokens } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
+import type {
+  Code,
+  Extension,
+  HtmlExtension,
+  Tokenizer,
+} from 'micromark-util-types';
 import { factoryBlockTag } from './utils/factory-block-tag.js';
 
 /**
  * Basic syntax for lax support of svelte block tags (`{#open}`, `{:branch}`,
  * `{/close}`). Does not validate block keywords.
- *
- * @returns {Extension}
  */
-export function mdsvBlock() {
+export function mdsvBlock(): Extension {
   return {
     disable: {
       null: ['codeIndented'],
@@ -34,8 +36,7 @@ export function mdsvBlock() {
   };
 }
 
-/** @returns {HtmlExtension} */
-export function mdsvBlockHtml() {
+export function mdsvBlockHtml(): HtmlExtension {
   return {
     exit: {
       [tokens.flowBlockTag](token) {
@@ -48,8 +49,7 @@ export function mdsvBlockHtml() {
   };
 }
 
-/** @type {Tokenizer} */
-function tokenizeBlockFlow(effects, ok, nok) {
+const tokenizeBlockFlow: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -61,10 +61,8 @@ function tokenizeBlockFlow(effects, ok, nok) {
    * > | {/
    *     ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryBlockTag(
       effects,
       endAfter,
@@ -83,10 +81,8 @@ function tokenizeBlockFlow(effects, ok, nok) {
    * > | {...}
    *         ^
    * ```
-   *
-   * @type {State}
    */
-  function endAfter(code) {
+  function endAfter(code: Code) {
     if (code === codes.eof) {
       return ok(code);
     }
@@ -98,10 +94,9 @@ function tokenizeBlockFlow(effects, ok, nok) {
     }
     return nok(code);
   }
-}
+};
 
-/** @type {Tokenizer} */
-function tokenizeBlockText(effects, ok, nok) {
+const tokenizeBlockText: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -113,10 +108,8 @@ function tokenizeBlockText(effects, ok, nok) {
    * > | {/...}
    *     ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryBlockTag(
       effects,
       ok,
@@ -129,4 +122,4 @@ function tokenizeBlockText(effects, ok, nok) {
       tokens.blockTagExpression,
     )(code);
   }
-}
+};

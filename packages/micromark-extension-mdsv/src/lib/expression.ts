@@ -1,12 +1,15 @@
-/** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
-
 import { tokens } from '@mdsv/constants';
 import { ok as assert } from 'devlop';
 import { codes } from 'micromark-util-symbol';
+import type {
+  Code,
+  Extension,
+  HtmlExtension,
+  Tokenizer,
+} from 'micromark-util-types';
 import { factoryExpression } from './utils/factory-expression.js';
 
-/** @returns {Extension} */
-export function mdsvExpression() {
+export function mdsvExpression(): Extension {
   return {
     text: {
       [codes.leftCurlyBrace]: {
@@ -18,8 +21,7 @@ export function mdsvExpression() {
   };
 }
 
-/** @returns {HtmlExtension} */
-export function mdsvExpressionHtml() {
+export function mdsvExpressionHtml(): HtmlExtension {
   return {
     exit: {
       [tokens.textExpression](token) {
@@ -29,8 +31,7 @@ export function mdsvExpressionHtml() {
   };
 }
 
-/** @type {Tokenizer} */
-function tokenizeExpressionText(effects, ok, nok) {
+const tokenizeExpressionText: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -38,10 +39,8 @@ function tokenizeExpressionText(effects, ok, nok) {
    *  > | {
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
     effects.enter(tokens.textExpression);
     effects.enter(tokens.marker);
@@ -55,10 +54,8 @@ function tokenizeExpressionText(effects, ok, nok) {
    *  > | {
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function noTag(code) {
+  function noTag(code: Code) {
     // bail out on tags and block tags
     if (
       code === codes.atSign ||
@@ -76,10 +73,8 @@ function tokenizeExpressionText(effects, ok, nok) {
    *  > | {...}
    *          ^
    * ```
-   *
-   * @type {State}
    */
-  function end(code) {
+  function end(code: Code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
     effects.exit(tokens.expressionValue);
     effects.enter(tokens.marker);
@@ -88,4 +83,4 @@ function tokenizeExpressionText(effects, ok, nok) {
     effects.exit(tokens.textExpression);
     return ok(code);
   }
-}
+};

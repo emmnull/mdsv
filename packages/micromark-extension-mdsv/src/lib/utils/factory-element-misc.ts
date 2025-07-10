@@ -1,15 +1,12 @@
-/** @import {Tokenizer, TokenizeContext, State, Effects} from 'micromark-util-types' */
-
 import { codes } from 'micromark-util-symbol';
+import type { Code, Effects, State } from 'micromark-util-types';
 
 /**
- * Tokenize html instructions, declarations, and comments.
- *
- * @param {Effects} effects
- * @param {State} ok
- * @param {State} nok
+ * - Instructions.
+ * - Declarations.
+ * - Comments.
  */
-export function factoryElementMisc(effects, ok, nok) {
+export function factoryElementMisc(effects: Effects, ok: State, nok: State) {
   return start;
 
   /**
@@ -19,10 +16,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <?
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     if (code === codes.exclamationMark) {
       effects.consume(code);
       return declarationStart;
@@ -39,10 +34,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <!
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function declarationStart(code) {
+  function declarationStart(code: Code) {
     if (code === codes.dash) {
       effects.consume(code);
       return commentStart;
@@ -55,10 +48,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <!
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function declaration(code) {
+  function declaration(code: Code) {
     // TO DO
     return ok(code);
   }
@@ -68,10 +59,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <!-
    *        ^
    * ```
-   *
-   * @type {State}
    */
-  function commentStart(code) {
+  function commentStart(code: Code) {
     if (code === codes.dash) {
       effects.consume(code);
       return comment;
@@ -84,10 +73,8 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <!--
    *         ^
    * ```
-   *
-   * @type {State}
    */
-  function comment(code) {
+  function comment(code: Code) {
     // TO DO
     return ok(code);
   }
@@ -97,24 +84,20 @@ export function factoryElementMisc(effects, ok, nok) {
    * > | <?
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function instructionStart(code) {
+  function instructionStart(code: Code) {
     // TO DO
     return ok(code);
   }
 
-  /**
-   * ```markdown
-   * > | <?
-   *       ^
-   * ```
-   *
-   * @type {State}
-   */
-  function instruction(code) {
-    // TO DO
-    return ok(code);
-  }
+  // /**
+  //  * ```markdown
+  //  * > | <?
+  //  *       ^
+  //  * ```
+  //  */
+  // function instruction(code: Code) {
+  //   // TO DO
+  //   return ok(code);
+  // }
 }

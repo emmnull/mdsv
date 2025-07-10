@@ -1,5 +1,3 @@
-/** @import {Code, Construct, Extension, HtmlExtension, Resolver, State, TokenizeContext, Tokenizer} from 'micromark-util-types' */
-
 import { tokens } from '@mdsv/constants';
 import { ok as assert } from 'devlop';
 import { blankLine } from 'micromark-core-commonmark';
@@ -7,11 +5,17 @@ import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { htmlRawNames } from 'micromark-util-html-tag-name';
 import { codes, constants, types as coreTypes } from 'micromark-util-symbol';
+import type {
+  Code,
+  Construct,
+  Extension,
+  HtmlExtension,
+  Tokenizer,
+} from 'micromark-util-types';
 import { factoryElementTag } from './utils/factory-element-tag.js';
 import { factoryExpression } from './utils/factory-expression.js';
 
-/** @returns {Extension} */
-export function mdsvElement() {
+export function mdsvElement(): Extension {
   return {
     disable: {
       null: ['htmlFlow', 'htmlText', 'codeIndented', 'autolink'],
@@ -33,8 +37,7 @@ export function mdsvElement() {
   };
 }
 
-/** @returns {HtmlExtension} */
-export function mdsvElementHtml() {
+export function mdsvElementHtml(): HtmlExtension {
   return {
     exit: {
       [tokens.flowElementTag](token) {
@@ -50,26 +53,8 @@ export function mdsvElementHtml() {
   };
 }
 
-/** @type {Construct} */
-const blankLineAfter = {
-  partial: true,
-  tokenize: tokenizeBlankLineAfter,
-};
-
-/** @type {Construct} */
-const rawCloseTag = {
-  partial: true,
-  tokenize: tokenizeRawCloseTag,
-};
-
-/** @type {Construct} */
-const nonLazyContinuationStart = {
-  partial: true,
-  tokenize: tokenizeNonLazyContinuationStart,
-};
-
-/** @type {Tokenizer} */
-function tokenizeElementFlow(effects, ok, nok) {
+const tokenizeElementFlow: Tokenizer = function (effects, ok, nok) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return start;
@@ -79,10 +64,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > | <
    *     ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryElementTag.call(
       self,
       effects,
@@ -100,10 +83,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > | <>
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function endAfter(code) {
+  function endAfter(code: Code) {
     if (code === codes.eof) {
       return ok(code);
     }
@@ -134,10 +115,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    *     ^
    *   |
    * ```
-   *
-   * @type {State}
    */
-  function continuationAfter(code) {
+  function continuationAfter(code: Code) {
     // effects.exit(types.svelteFlow);
     return ok(code);
   }
@@ -148,10 +127,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > |
    *    ^
    * ```
-   *
-   * @type {State}
    */
-  function continuationStart(code) {
+  function continuationStart(code: Code) {
     return effects.check(
       nonLazyContinuationStart,
       continuationStartNonLazy,
@@ -165,10 +142,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    *       ^
    *   |
    * ```
-   *
-   * @type {State}
    */
-  function continuationStartNonLazy(code) {
+  function continuationStartNonLazy(code: Code) {
     assert(markdownLineEnding(code), 'expected to be at line ending');
     effects.enter(coreTypes.lineEnding);
     effects.consume(code);
@@ -182,10 +157,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > |
    *    ^
    * ```
-   *
-   * @type {State}
    */
-  function chunkStart(code) {
+  function chunkStart(code: Code) {
     if (code === codes.eof) {
       return ok(code);
     }
@@ -204,10 +177,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > | jello
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function chunk(code) {
+  function chunk(code: Code) {
     if (code === codes.eof) {
       effects.exit(coreTypes.chunkText);
       return ok(code);
@@ -229,10 +200,8 @@ function tokenizeElementFlow(effects, ok, nok) {
    * > | <script>const foo = "bar"</script>
    *             ^^^^^^^^^^^^^^^^^
    * ```
-   *
-   * @type {State}
    */
-  function raw(code) {
+  function raw(code: Code) {
     return factoryExpression(
       effects,
       effects.attempt(rawCloseTag, ok, rawConsume),
@@ -241,12 +210,17 @@ function tokenizeElementFlow(effects, ok, nok) {
     )(code);
   }
 
-  /** @type {State} */
-  function rawConsume(code) {
+  /**
+   * ```markdown
+   * > | <script>foo
+   *               ^
+   * ```
+   */
+  function rawConsume(code: Code) {
     effects.consume(code);
     return raw;
   }
-}
+};
 
 /**
  * ```markdown
@@ -255,10 +229,8 @@ function tokenizeElementFlow(effects, ok, nok) {
  * > |
  *    ^
  * ```
- *
- * @type {Tokenizer}
  */
-function tokenizeBlankLineAfter(effects, ok, nok) {
+const tokenizeBlankLineAfter: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -266,17 +238,15 @@ function tokenizeBlankLineAfter(effects, ok, nok) {
    * > | <>
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     assert(markdownLineEnding(code), 'expected to be at line ending');
     effects.enter(coreTypes.lineEnding);
     effects.consume(code);
     effects.exit(coreTypes.lineEnding);
     return effects.attempt(blankLine, ok, nok);
   }
-}
+};
 
 /**
  * ```markdown
@@ -284,10 +254,13 @@ function tokenizeBlankLineAfter(effects, ok, nok) {
  * > |
  *    ^
  * ```
- *
- * @type {Tokenizer}
  */
-function tokenizeNonLazyContinuationStart(effects, ok, nok) {
+const tokenizeNonLazyContinuationStart: Tokenizer = function (
+  effects,
+  ok,
+  nok,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return start;
@@ -297,10 +270,8 @@ function tokenizeNonLazyContinuationStart(effects, ok, nok) {
    * > | <>
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     if (markdownLineEnding(code)) {
       effects.enter(coreTypes.lineEnding);
       effects.consume(code);
@@ -316,13 +287,11 @@ function tokenizeNonLazyContinuationStart(effects, ok, nok) {
    * > |
    *    ^
    * ```
-   *
-   * @type {State}
    */
-  function after(code) {
+  function after(code: Code) {
     return self.parser.lazy[self.now().line] ? nok(code) : ok(code);
   }
-}
+};
 
 /**
  * ```markdown
@@ -330,10 +299,8 @@ function tokenizeNonLazyContinuationStart(effects, ok, nok) {
  * > |
  *    ^
  * ```
- *
- * @type {Tokenizer}
  */
-function tokenizeRawCloseTag(effects, ok, nok) {
+const tokenizeRawCloseTag: Tokenizer = function (effects, ok, nok) {
   const rawName = this.mdsvElementTagName;
   let index = 0;
 
@@ -353,10 +320,8 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    * > | <script>const foo = "bar"</script>
    *                              ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     assert(code === codes.lessThan, 'expected `<`');
     effects.exit(tokens.elementRaw);
     effects.enter(tokens.flowElementTag);
@@ -371,10 +336,8 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    * > | <script>const foo = "bar"</script>
    *                               ^
    * ```
-   *
-   * @type {State}
    */
-  function startAfter(code) {
+  function startAfter(code: Code) {
     if (code === codes.slash) {
       effects.consume(code);
       effects.enter(tokens.elementTagName);
@@ -388,10 +351,8 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    * > | <script>const foo = "bar"</script>
    *                                ^^^^^^
    * ```
-   *
-   * @type {State}
    */
-  function tagName(code) {
+  function tagName(code: Code) {
     assert(
       rawName != undefined,
       'expected open raw element tag name to be defined',
@@ -412,10 +373,8 @@ function tokenizeRawCloseTag(effects, ok, nok) {
    * > | <script>const foo = "bar"</script>
    *                                      ^
    * ```
-   *
-   * @type {State}
    */
-  function end(code) {
+  function end(code: Code) {
     if (code === codes.greaterThan) {
       effects.enter(tokens.elementTagMarker);
       effects.consume(code);
@@ -446,10 +405,10 @@ function tokenizeRawCloseTag(effects, ok, nok) {
   //   }
   //   return ok(code);
   // }
-}
+};
 
-/** @type {Tokenizer} */
-function tokenizeElementText(effects, ok, nok) {
+const tokenizeElementText: Tokenizer = function (effects, ok, nok) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return start;
@@ -459,10 +418,8 @@ function tokenizeElementText(effects, ok, nok) {
    * > | jello <
    *           ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryElementTag.call(
       self,
       effects,
@@ -474,4 +431,19 @@ function tokenizeElementText(effects, ok, nok) {
       tokens.elementTagAttribute,
     )(code);
   }
-}
+};
+
+const blankLineAfter: Construct = {
+  partial: true,
+  tokenize: tokenizeBlankLineAfter,
+};
+
+const rawCloseTag: Construct = {
+  partial: true,
+  tokenize: tokenizeRawCloseTag,
+};
+
+const nonLazyContinuationStart: Construct = {
+  partial: true,
+  tokenize: tokenizeNonLazyContinuationStart,
+};

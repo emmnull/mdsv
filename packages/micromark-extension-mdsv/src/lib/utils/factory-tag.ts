@@ -1,5 +1,3 @@
-/** @import {Effects,State, TokenType} from 'micromark-util-types' */
-
 import { ok as assert } from 'devlop';
 import {
   asciiAlpha,
@@ -8,29 +6,19 @@ import {
   markdownSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
+import type { Code, Effects, State, TokenType } from 'micromark-util-types';
 import { factoryExpression } from './factory-expression.js';
 
-/**
- * @param {Effects} effects
- * @param {State} ok
- * @param {State} nok
- * @param {TokenType} type
- * @param {TokenType} markerType
- * @param {TokenType} valueType
- * @param {TokenType} symbolType
- * @param {TokenType} nameType
- * @param {TokenType} expressionType
- */
 export function factoryTag(
-  effects,
-  ok,
-  nok,
-  type,
-  markerType,
-  valueType,
-  symbolType,
-  nameType,
-  expressionType,
+  effects: Effects,
+  ok: State,
+  nok: State,
+  type: TokenType,
+  markerType: TokenType,
+  valueType: TokenType,
+  symbolType: TokenType,
+  nameType: TokenType,
+  expressionType: TokenType,
 ) {
   return start;
 
@@ -39,10 +27,8 @@ export function factoryTag(
    *  > | {
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     assert(code === codes.leftCurlyBrace, 'expected `{`');
     effects.enter(type);
     effects.enter(markerType);
@@ -57,10 +43,8 @@ export function factoryTag(
    *  > | {@
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function tagMarker(code) {
+  function tagMarker(code: Code) {
     if (code !== codes.atSign) {
       return nok(code);
     }
@@ -76,10 +60,8 @@ export function factoryTag(
    *  > | {@x
    *        ^
    * ```
-   *
-   * @type {State}
    */
-  function nameStart(code) {
+  function nameStart(code: Code) {
     if (asciiAlpha(code)) {
       effects.enter(nameType);
       effects.consume(code);
@@ -93,10 +75,8 @@ export function factoryTag(
    *  > | {@xy...
    *         ^
    * ```
-   *
-   * @type {State}
    */
-  function name(code) {
+  function name(code: Code) {
     if (asciiAlphanumeric(code)) {
       effects.consume(code);
       return name;
@@ -110,10 +90,8 @@ export function factoryTag(
    *  > | {@xyz
    *           ^
    * ```
-   *
-   * @type {State}
    */
-  function nameAfter(code) {
+  function nameAfter(code: Code) {
     if (code === codes.eof) {
       return nok(code);
     }
@@ -138,10 +116,8 @@ export function factoryTag(
    *  > | {@xyz ...}
    *               ^
    * ```
-   *
-   * @type {State}
    */
-  function expressionAfter(code) {
+  function expressionAfter(code: Code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
     effects.exit(expressionType);
     return end(code);
@@ -154,10 +130,8 @@ export function factoryTag(
    *  > | {@xyz   }
    *              ^
    * ```
-   *
-   * @type {State}
    */
-  function end(code) {
+  function end(code: Code) {
     assert(code === codes.rightCurlyBrace, 'expected `}`');
     effects.exit(valueType);
     effects.enter(markerType);

@@ -6,6 +6,20 @@
     "rootDir": "./src",
     "composite": true
   },
-  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "include": [
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "src/lib/utils/factory-tag.ts",
+    "src/lib/utils/factory-expression.ts",
+    "src/lib/utils/factory-element-tag.ts",
+    "src/lib/utils/factory-element-tag-attributes.ts",
+    "src/lib/utils/factory-element-misc.ts",
+    "src/lib/utils/factory-block-tag.ts",
+    "src/lib/tag.ts",
+    "src/lib/expression.ts",
+    "src/lib/element.ts",
+    "src/lib/block.ts",
+    "src/index.ts"
+  ],
   "exclude": ["node_modules", "dist", "test"]
 }

@@ -1,13 +1,16 @@
-/** @import {State, Tokenizer, TokenizeContext, Extension, HtmlExtension} from 'micromark-util-types' */
-
 import { tokens } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
+import type {
+  Code,
+  Extension,
+  HtmlExtension,
+  Tokenizer,
+} from 'micromark-util-types';
 import { factoryTag } from './utils/factory-tag.js';
 
-/** @returns {Extension} */
-export function mdsvTag() {
+export function mdsvTag(): Extension {
   return {
     flow: {
       [codes.leftCurlyBrace]: {
@@ -26,8 +29,7 @@ export function mdsvTag() {
   };
 }
 
-/** @returns {HtmlExtension} */
-export function mdsvTagHtml() {
+export function mdsvTagHtml(): HtmlExtension {
   return {
     exit: {
       [tokens.flowTag](token) {
@@ -40,8 +42,7 @@ export function mdsvTagHtml() {
   };
 }
 
-/** @type {Tokenizer} */
-function tokenizeTagFlow(effects, ok, nok) {
+const tokenizeTagFlow: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -49,10 +50,8 @@ function tokenizeTagFlow(effects, ok, nok) {
    *  > | {
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryTag(
       effects,
       endAfter,
@@ -66,8 +65,7 @@ function tokenizeTagFlow(effects, ok, nok) {
     )(code);
   }
 
-  /** @type {State} */
-  function endAfter(code) {
+  function endAfter(code: Code) {
     if (code === codes.eof) {
       return ok(code);
     }
@@ -79,10 +77,9 @@ function tokenizeTagFlow(effects, ok, nok) {
     }
     return nok(code);
   }
-}
+};
 
-/** @type {Tokenizer} */
-function tokenizeTagText(effects, ok, nok) {
+const tokenizeTagText: Tokenizer = function (effects, ok, nok) {
   return start;
 
   /**
@@ -90,10 +87,8 @@ function tokenizeTagText(effects, ok, nok) {
    *  > | {
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     return factoryTag(
       effects,
       ok,
@@ -106,4 +101,4 @@ function tokenizeTagText(effects, ok, nok) {
       tokens.tagExpression,
     )(code);
   }
-}
+};

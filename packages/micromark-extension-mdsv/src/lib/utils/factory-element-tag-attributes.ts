@@ -1,11 +1,10 @@
-/** @import {State, Code, Effects, Tokenizer, TokenType} from 'micromark-util-types'; */
-
 import { ok as assert } from 'devlop';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
+import type { Code, Effects, State, TokenType } from 'micromark-util-types';
 import { factoryExpression } from './factory-expression.js';
 
 /**
@@ -19,20 +18,14 @@ import { factoryExpression } from './factory-expression.js';
  * > | <foo .../>
  *          ^^^^
  * ```
- *
- * @param {Effects} effects
- * @param {State} ok State transitioned to after encountering a closing bracket
- *   or slash.
- * @param {State} nok State transitioned to if invalid syntax.
- * @param {TokenType} attributeType
  */
-export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
-  /**
-   * @type {typeof codes.apostrophe
-   *   | typeof codes.quotationMark
-   *   | undefined}
-   */
-  let quote;
+export function factoryElementTagAttributes(
+  effects: Effects,
+  ok: State,
+  nok: State,
+  attributeType: TokenType,
+) {
+  let quote: typeof codes.apostrophe | typeof codes.quotationMark | undefined;
 
   return start;
 
@@ -41,10 +34,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo x
    *          ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code): State | undefined {
     if (code === codes.slash || code === codes.greaterThan) {
       return ok(code);
     }
@@ -63,10 +54,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo x
    *          ^
    * ```
-   *
-   * @type {State}
    */
-  function attributeStart(code) {
+  function attributeStart(code: Code) {
     effects.enter(attributeType);
     return attribute(code);
   }
@@ -76,10 +65,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo xy
    *           ^
    * ```
-   *
-   * @type {State}
    */
-  function attribute(code) {
+  function attribute(code: Code) {
     if (code === codes.eof) {
       return nok(code);
     }
@@ -113,10 +100,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo {bar}
    *              ^
    * ```
-   *
-   * @type {State}
    */
-  function attributeBraceEnd(brace) {
+  function attributeBraceEnd(brace: Code) {
     assert(brace === codes.rightCurlyBrace, 'expected `}`');
     effects.consume(brace);
     return attribute;
@@ -127,10 +112,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo bar="
    *              ^
    * ```
-   *
-   * @type {State}
    */
-  function attributeQuoteStart(code) {
+  function attributeQuoteStart(code: Code) {
     assert(
       code === codes.quotationMark || code === codes.apostrophe,
       'expected "\'" or """',
@@ -145,10 +128,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo bar="...{...}
    *                      ^
    * ```
-   *
-   * @param {Code} brace
    */
-  function attributeQuoteBraceEnd(brace) {
+  function attributeQuoteBraceEnd(brace: Code) {
     assert(brace === codes.rightCurlyBrace, 'expected `}`');
     return attributeQuote;
   }
@@ -158,10 +139,8 @@ export function factoryElementTagAttributes(effects, ok, nok, attributeType) {
    * > | <foo bar="x
    *               ^
    * ```
-   *
-   * @type {State}
    */
-  function attributeQuote(code) {
+  function attributeQuote(code: Code) {
     assert(
       quote === codes.quotationMark || quote === codes.apostrophe,
       'expected quote to be "\'" or """',

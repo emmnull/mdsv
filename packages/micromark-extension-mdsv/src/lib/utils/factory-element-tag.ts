@@ -1,5 +1,3 @@
-/** @import {Code, Effects, State, TokenType, TokenizeContext} from 'micromark-util-types' */
-
 import { htmlVoidNames } from '@mdsv/constants';
 import { ok as assert } from 'devlop';
 import {
@@ -8,6 +6,13 @@ import {
   markdownLineEndingOrSpace,
 } from 'micromark-util-character';
 import { codes } from 'micromark-util-symbol';
+import type {
+  Code,
+  Effects,
+  State,
+  TokenizeContext,
+  TokenType,
+} from 'micromark-util-types';
 import { factoryElementMisc } from './factory-element-misc.js';
 import { factoryElementTagAttributes } from './factory-element-tag-attributes.js';
 
@@ -16,11 +21,8 @@ import { factoryElementTagAttributes } from './factory-element-tag-attributes.js
  * > | <x
  *      ^
  * ```
- *
- * @param {Code} code
- * @returns {code is NonNullable<Code>}
  */
-function tagNameStartChar(code) {
+function tagNameStartChar(code: Code): code is NonNullable<Code> {
   return asciiAlpha(code);
 }
 
@@ -29,11 +31,8 @@ function tagNameStartChar(code) {
  * > | <xy
  *       ^
  * ```
- *
- * @param {Code} code
- * @returns {code is NonNullable<Code>}
  */
-function tagNameChar(code) {
+function tagNameChar(code: Code): code is NonNullable<Code> {
   return (
     asciiAlphanumeric(code) ||
     code === codes.dash ||
@@ -51,39 +50,26 @@ function tagNameChar(code) {
  * <foo.bar>
  * <foo:bar>
  * ```
- *
- * @param {string} name
  */
-export function svelteName(name) {
+export function svelteName(name: string) {
   return /[A-Z]/.test(name[0]) || /[-.:]/.test(name);
 }
 
-/**
- * @this {TokenizeContext}
- * @param {Effects} effects
- * @param {State} ok
- * @param {State} nok
- * @param {TokenType} type
- * @param {TokenType} markerType
- * @param {TokenType} nameType
- * @param {TokenType} attributeType
- */
 export function factoryElementTag(
-  effects,
-  ok,
-  nok,
-  type,
-  markerType,
-  nameType,
-  attributeType,
+  this: TokenizeContext,
+  effects: Effects,
+  ok: State,
+  nok: State,
+  type: TokenType,
+  markerType: TokenType,
+  nameType: TokenType,
+  attributeType: TokenType,
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
-  /** @type {string} */
-  let name;
-  /** @type {boolean} */
-  let isOpeningTag;
-  /** @type {boolean} */
-  let isClosingTag;
+  let name: string;
+  let isOpeningTag: boolean;
+  let isClosingTag: boolean;
 
   return start;
 
@@ -92,10 +78,8 @@ export function factoryElementTag(
    * > | <
    *     ^
    * ```
-   *
-   * @type {State}
    */
-  function start(code) {
+  function start(code: Code) {
     assert(code === codes.lessThan, 'expected `<`');
     effects.enter(type);
     effects.enter(markerType);
@@ -109,10 +93,8 @@ export function factoryElementTag(
    * > | <
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function startAfter(code) {
+  function startAfter(code: Code) {
     if (code === codes.exclamationMark || code === codes.questionMark) {
       return factoryElementMisc.call(self, effects, end, nok)(code);
     }
@@ -131,10 +113,8 @@ export function factoryElementTag(
    * > | <x
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function tagNameStart(code) {
+  function tagNameStart(code: Code) {
     if (tagNameStartChar(code)) {
       effects.enter(nameType);
       effects.consume(code);
@@ -149,10 +129,8 @@ export function factoryElementTag(
    * > | <xy
    *       ^
    * ```
-   *
-   * @type {State}
    */
-  function tagName(code) {
+  function tagName(code: Code) {
     if (tagNameChar(code)) {
       effects.consume(code);
       name += String.fromCharCode(code);
@@ -168,10 +146,8 @@ export function factoryElementTag(
    * > | <xyz
    *         ^
    * ```
-   *
-   * @type {State}
    */
-  function tagNameAfter(code) {
+  function tagNameAfter(code: Code) {
     if (code === codes.eof) {
       return nok(code);
     }
@@ -198,10 +174,8 @@ export function factoryElementTag(
    * > | <x .../
    *           ^
    * ```
-   *
-   * @type {State}
    */
-  function attributesAfter(code) {
+  function attributesAfter(code: Code) {
     if (code === codes.slash) {
       isClosingTag = true;
       effects.consume(code);
@@ -215,10 +189,8 @@ export function factoryElementTag(
    * > | <>
    *      ^
    * ```
-   *
-   * @type {State}
    */
-  function end(code) {
+  function end(code: Code) {
     if (code === codes.greaterThan) {
       effects.enter(markerType);
       effects.consume(code);

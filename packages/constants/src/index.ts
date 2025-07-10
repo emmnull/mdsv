@@ -1,5 +1,5 @@
 /** Token and node types related to Svelte syntaxes in markdown. */
-export const tokens = /** @type const */ {
+export const tokens = {
   /**
    * ```markdown
    * > | {...}
@@ -243,9 +243,9 @@ export const tokens = /** @type const */ {
    * ```
    */
   elementRaw: 'mdsvElementRaw',
-};
+} as const;
 
-export const nodes = /** @type {const} */ {
+export const nodes = {
   textExpression: 'mdsvTextExpression',
   textTag: 'mdsvTextTag',
   flowTag: 'mdsvFlowTag',
@@ -255,9 +255,9 @@ export const nodes = /** @type {const} */ {
   flowElement: 'mdsvFlowElement',
   textRaw: 'mdsvTextRaw',
   flowRaw: 'mdsvFlowRaw',
-};
+} as const;
 
-export const blockTagTypes = /** @type {const} */ ['open', 'branch', 'close'];
+export const blockTagTypes = ['open', 'branch', 'close'] as const;
 
 /**
  * HTML element names for elements that do not have end tags nor should have
@@ -283,7 +283,7 @@ export const htmlVoidNames = [
 ];
 
 /** HTML element names for elements that can be replaced with custom components. */
-export const htmlCustomizableNames = /** @type {const} */ [
+export const htmlCustomizableNames = [
   'h1',
   'h2',
   'h3',

@@ -1,10 +1,8 @@
-import { tokens } from '@mdsv/constants';
-import 'micromark-util-types';
-import { Token } from 'micromark-util-types';
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+import type { tokens } from '@mdsv/constants';
+import type { Token } from 'micromark-util-types';
 
-type MdsvTokenTypeMap = {
-  [K in (typeof tokens)[keyof typeof tokens]]: Token;
-};
+type MdsvTokenTypeMap = Record<(typeof tokens)[keyof typeof tokens], Token>;
 
 type MdsvTokenizeContext = {
   mdsvElementTagName?: string;

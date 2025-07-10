@@ -1,5 +1,3 @@
-/** @import {Tokenizer, State, Code, Effects, Token} from 'micromark-util-types'; */
-
 import { factorySpace } from 'micromark-factory-space';
 import {
   markdownLineEnding,
@@ -7,9 +5,9 @@ import {
   markdownSpace,
 } from 'micromark-util-character';
 import { codes, types as coreTypes } from 'micromark-util-symbol';
+import type { Code, Effects, State } from 'micromark-util-types';
 
-/** @param {Code} code */
-function isRegexFlag(code) {
+function isRegexFlag(code: Code) {
   switch (code) {
     case codes.lowercaseD:
     case codes.lowercaseG:
@@ -25,8 +23,7 @@ function isRegexFlag(code) {
   }
 }
 
-/** @param {Code} code */
-function getClosingBracket(code) {
+function getClosingBracket(code: Code) {
   switch (code) {
     case codes.leftCurlyBrace:
       return codes.rightCurlyBrace;
@@ -49,34 +46,27 @@ function getClosingBracket(code) {
  * > | {...}
  *      ^^^
  * ```
- *
- * @param {Effects} effects
- * @param {State} ok
- * @param {State} nok
- * @param {Code} closing
  */
-export function factoryExpression(effects, ok, nok, closing) {
-  /**
-   * @type {(
-   *   | typeof codes.leftCurlyBrace
-   *   | typeof codes.leftParenthesis
-   *   | typeof codes.leftSquareBracket
-   * )[]}
-   */
-  const brackets = [];
-  /**
-   * @type {(
-   *   | typeof codes.leftCurlyBrace
-   *   | typeof codes.leftParenthesis
-   *   | typeof codes.leftSquareBracket
-   * )[]}
-   */
-  const regexBrackets = [];
+export function factoryExpression(
+  effects: Effects,
+  ok: State,
+  nok: State,
+  closing: Code,
+) {
+  const brackets: (
+    | typeof codes.leftCurlyBrace
+    | typeof codes.leftParenthesis
+    | typeof codes.leftSquareBracket
+  )[] = [];
+  const regexBrackets: (
+    | typeof codes.leftCurlyBrace
+    | typeof codes.leftParenthesis
+    | typeof codes.leftSquareBracket
+  )[] = [];
 
   return start;
 
-  /** @type {State} */
-  function start(code) {
+  function start(code: Code) {
     if (code === closing) {
       return ok(code);
     }
@@ -130,10 +120,8 @@ export function factoryExpression(effects, ok, nok, closing) {
     return start;
   }
 
-  /** @param {NonNullable<Code>} quote */
-  function createStringConsumer(quote) {
-    /** @type {State} */
-    function consumeString(code) {
+  function createStringConsumer(quote: NonNullable<Code>) {
+    function consumeString(code: Code) {
       if (code === codes.eof) {
         return nok;
       }
@@ -148,8 +136,8 @@ export function factoryExpression(effects, ok, nok, closing) {
       effects.consume(code);
       return consumeString;
     }
-    /** @type {State} */
-    function consumeStringEscape(code) {
+
+    function consumeStringEscape(code: Code) {
       if (code === codes.eof) {
         return nok;
       }
@@ -159,8 +147,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeString;
   }
 
-  /** @type {State} */
-  function consumePossibleCommentOrRegex(code) {
+  function consumePossibleCommentOrRegex(code: Code) {
     if (code === codes.slash) {
       effects.consume(code);
       return consumeSingleLineComment;
@@ -173,8 +160,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeRegexBody(code);
   }
 
-  /** @type {State} */
-  function consumeSingleLineComment(code) {
+  function consumeSingleLineComment(code: Code) {
     if (code === codes.eof) {
       return nok;
     }
@@ -188,8 +174,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeSingleLineComment;
   }
 
-  /** @type {State} */
-  function consumeMultiLineComment(code) {
+  function consumeMultiLineComment(code: Code): State {
     if (code === codes.eof) {
       return nok;
     }
@@ -201,8 +186,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeMultiLineComment;
   }
 
-  /** @type {State} */
-  function consumeMultiLineCommentPossibleEnd(code) {
+  function consumeMultiLineCommentPossibleEnd(code: Code) {
     if (code === codes.eof) {
       return nok;
     }
@@ -213,8 +197,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeMultiLineComment(code);
   }
 
-  /** @type {State} */
-  function consumeRegexBody(code) {
+  function consumeRegexBody(code: Code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return nok;
     }
@@ -240,8 +223,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeRegexBody;
   }
 
-  /** @type {State} */
-  function consumeRegexEscape(code) {
+  function consumeRegexEscape(code: Code) {
     if (code === codes.eof || markdownLineEnding(code)) {
       return nok;
     }
@@ -249,8 +231,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeRegexBody;
   }
 
-  /** @type {State} */
-  function consumeRegexFlags(code) {
+  function consumeRegexFlags(code: Code) {
     if (isRegexFlag(code)) {
       effects.consume(code);
       return consumeRegexFlags;
@@ -258,8 +239,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return start;
   }
 
-  /** @type {State} */
-  function consumeTemplateLiteral(code) {
+  function consumeTemplateLiteral(code: Code): State {
     if (code === codes.eof) {
       return nok;
     }
@@ -279,8 +259,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeTemplateLiteral;
   }
 
-  /** @type {State} */
-  function consumeTemplateLiteralEscape(code) {
+  function consumeTemplateLiteralEscape(code: Code) {
     if (code === codes.eof) {
       return nok;
     }
@@ -288,8 +267,7 @@ export function factoryExpression(effects, ok, nok, closing) {
     return consumeTemplateLiteral;
   }
 
-  /** @type {State} */
-  function consumeTemplateLiteralPossibleExpression(code) {
+  function consumeTemplateLiteralPossibleExpression(code: Code) {
     if (code === codes.leftCurlyBrace) {
       brackets.push(code);
       effects.consume(code);
