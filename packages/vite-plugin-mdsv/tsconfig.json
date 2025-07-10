@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../constants" }, { "path": "../utils" }],
+  "references": [{ "path": "../constants" }, { "path": "../remark-mdsv" }],
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"

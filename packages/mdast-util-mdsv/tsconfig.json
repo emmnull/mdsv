@@ -9,6 +9,11 @@
     "rootDir": "./src",
     "composite": true
   },
-  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "include": [
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "src/lib/block.ts",
+    "src/index.ts"
+  ],
   "exclude": ["node_modules", "dist", "test"]
 }

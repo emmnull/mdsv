@@ -1,0 +1,30 @@
+{
+  "name": "vite-plugin-mdsv",
+  "version": "0.0.0-dev",
+  "description": "",
+  "keywords": [
+    "markdown",
+    "svelte",
+    "vite",
+    "unified",
+    "plugin"
+  ],
+  "license": "MIT",
+  "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --test --watch",
+    "test": "node --test"
+  },
+  "devDependencies": {}
+}

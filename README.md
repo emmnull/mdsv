@@ -27,7 +27,7 @@ Markdown AST utilities for handling svelte-related nodes.
 
 Remark plugin to support svelte syntax, front matter metadata, as well as minimal customizations.
 
-### [`svelte-preprocess-mdsv`](./packages/svelte-preprocess-mdsv/)
+### [`vite-plugin-mdsv`](./packages/svelte-preprocess-mdsv/)
 
 Basic svelte preprocessor built on top of the [`remark-mdsv`](./packages/remark-mdsv/) to add support for markdown modules.
 
