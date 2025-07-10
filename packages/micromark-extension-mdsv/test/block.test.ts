@@ -1,6 +1,5 @@
 import { micromark } from 'micromark';
-import { Options } from 'micromark-util-types';
-import { strictEqual } from 'node:assert';
+import type { Options } from 'micromark-util-types';
 import { describe, expect, test } from 'vitest';
 import { mdsvBlock, mdsvBlockHtml } from '../src/lib/block.js';
 
@@ -15,31 +14,13 @@ describe('block tokenization', () => {
     expect(micromark('Hello {#if foo}bar{/if}', options)).toBe(
       '<p>Hello {#if foo}bar{/if}</p>',
     );
-    strictEqual(
-      micromark('{#if foo}bar{/if}', options),
+
+    expect(micromark('{#if foo}bar{/if}', options)).toBe(
       '<p>{#if foo}bar{/if}</p>',
     );
 
-    strictEqual(
-      micromark('{#if foo}bar{/if} baz', options),
+    expect(micromark('{#if foo}bar{/if} baz', options)).toBe(
       '<p>{#if foo}bar{/if} baz</p>',
     );
   });
 });
-
-//   it('suports flow blocks', () => {
-//     strictEqual(
-//       micromark(
-//         dedent`
-// 				{#if foo}
-// 					Hello world
-// 				{/if}`,
-//         options,
-//       ),
-//       dedent`
-// 			{#if foo}
-// 			<p>Hello world</p>
-// 			{/if}`,
-//     );
-//   });
-// });

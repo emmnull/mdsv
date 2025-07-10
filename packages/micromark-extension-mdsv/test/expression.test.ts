@@ -1,32 +1,34 @@
 import { micromark } from 'micromark';
-import { strictEqual } from 'node:assert';
-import { describe, it } from 'node:test';
+import type { Options } from 'micromark-util-types';
+import { describe, expect, test } from 'vitest';
 import { mdsvExpression, mdsvExpressionHtml } from '../src/lib/expression.js';
 
-/** @type {import('micromark-util-types').Options} */
-const options = {
+const options: Options = {
   extensions: [mdsvExpression()],
   htmlExtensions: [mdsvExpressionHtml()],
   allowDangerousHtml: true,
 };
 
-describe('micromark extension tokenizes svelte expressions in markdown', () => {
-  it('tokenizes simple inline expression', () => {
-    strictEqual(micromark('{foo}', options), '<p>{foo}</p>');
+describe('tokenizes svelte {expression}s', () => {
+  test('tokenizes simple inline expression', () => {
+    expect(micromark('{foo}', options)).toBe('<p>{foo}</p>');
   });
 
-  it('tokenizes expressions inside markdown flow', () => {
-    strictEqual(micromark('# {foo}', options), '<h1>{foo}</h1>');
-    strictEqual(
-      micromark('- {foo}\n- A\n- B', options),
+  test('tokenizes expressions inside markdown flow', () => {
+    expect(micromark('# {foo}', options)).toBe('<h1>{foo}</h1>');
+
+    expect(micromark('- {foo}\n- A\n- B', options)).toBe(
       '<ul>\n<li>{foo}</li>\n<li>A</li>\n<li>B</li>\n</ul>',
     );
   });
 
-  it('tokenizes expressions inside html tags', () => {
-    strictEqual(
-      micromark('<li class="{foo}" {...attrs}>Test</li>', options),
+  test('tokenizes expressions inside html tags', () => {
+    expect(micromark('<li class="{foo}" {...attrs}>Test</li>', options)).toBe(
       '<li class="{foo}" {...attrs}>Test</li>',
     );
   });
+
+  expect(micromark('<div class="a {b}" style={c} />', options)).toBe(
+    '<div class="a {b}" style={c} />',
+  );
 });

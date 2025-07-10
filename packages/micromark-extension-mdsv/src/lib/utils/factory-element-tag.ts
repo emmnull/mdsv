@@ -1,11 +1,13 @@
 import { htmlVoidNames } from '@mdsv/constants';
 import { ok as assert } from 'devlop';
+import { factorySpace } from 'micromark-factory-space';
 import {
   asciiAlpha,
   asciiAlphanumeric,
-  markdownLineEndingOrSpace,
+  markdownLineEnding,
+  markdownSpace,
 } from 'micromark-util-character';
-import { codes } from 'micromark-util-symbol';
+import { codes, types } from 'micromark-util-symbol';
 import type {
   Code,
   Effects,
@@ -84,7 +86,7 @@ export function factoryElementTag(
     effects.enter(type);
     effects.enter(markerType);
     effects.consume(code);
-    effects.exit(markerType);
+    // effects.exit(markerType);
     return startAfter;
   }
 
@@ -101,10 +103,12 @@ export function factoryElementTag(
     if (code === codes.slash) {
       isClosingTag = true;
       effects.consume(code);
+      effects.exit(markerType);
       return tagNameStart;
     } else {
       isOpeningTag = true;
     }
+    effects.exit(markerType);
     return tagNameStart(code);
   }
 
@@ -151,8 +155,13 @@ export function factoryElementTag(
     if (code === codes.eof) {
       return nok(code);
     }
-    if (markdownLineEndingOrSpace(code)) {
+    if (markdownSpace(code)) {
+      return factorySpace(effects, tagNameAfter, types.whitespace)(code);
+    }
+    if (markdownLineEnding(code)) {
+      effects.enter(types.whitespace);
       effects.consume(code);
+      effects.exit(types.whitespace);
       return tagNameAfter;
     }
     return factoryElementTagAttributes(
@@ -178,9 +187,11 @@ export function factoryElementTag(
   function attributesAfter(code: Code) {
     if (code === codes.slash) {
       isClosingTag = true;
+      effects.enter(markerType);
       effects.consume(code);
       return end;
     }
+    effects.enter(markerType);
     return end(code);
   }
 
@@ -192,7 +203,6 @@ export function factoryElementTag(
    */
   function end(code: Code) {
     if (code === codes.greaterThan) {
-      effects.enter(markerType);
       effects.consume(code);
       effects.exit(markerType);
       const token = effects.exit(type);

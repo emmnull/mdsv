@@ -2,10 +2,9 @@ import { ok as assert } from 'devlop';
 import { factorySpace } from 'micromark-factory-space';
 import {
   asciiAlpha,
-  markdownLineEnding,
-  markdownSpace,
+  markdownLineEndingOrSpace,
 } from 'micromark-util-character';
-import { codes, types as coreTypes } from 'micromark-util-symbol';
+import { codes, types } from 'micromark-util-symbol';
 import type {
   Code,
   Effects,
@@ -136,12 +135,8 @@ export function factoryBlockTag(
     if (code === codes.rightCurlyBrace) {
       return end(code);
     }
-    if (markdownSpace(code)) {
-      return factorySpace(effects, nameAfter, coreTypes.whitespace);
-    }
-    if (markdownLineEnding(code)) {
-      effects.consume(code);
-      return nameAfter;
+    if (markdownLineEndingOrSpace(code)) {
+      return factorySpace(effects, nameAfter, types.whitespace)(code);
     }
     withTokenData(effects.enter(expressionType));
     return factoryExpression(

@@ -1,47 +1,54 @@
-/** @import {Options} from 'micromark-util-types' */
-
+import dedent from 'dedent';
 import { micromark } from 'micromark';
-import { strictEqual } from 'node:assert';
-import { describe, it } from 'node:test';
+import type { Options } from 'micromark-util-types';
+import { describe, expect, test } from 'vitest';
 import { mdsvElement, mdsvElementHtml } from '../src/lib/element.js';
 
-/** @type {Options} */
-const options = {
+const options: Options = {
   extensions: [mdsvElement()],
   htmlExtensions: [mdsvElementHtml()],
   allowDangerousHtml: true,
 };
 
 describe('svelteElement micromark extesion processes elements and components syntax', () => {
-  it('supports standalone self-closing and void elements as flow', () => {
-    strictEqual(micromark('<FooBar />', options), '<FooBar />');
+  test('supports standalone self-closing and void elements as flow', () => {
+    expect(micromark('<FooBar />', options)).toBe('<FooBar />');
 
-    strictEqual(
-      micromark(
-        '<FooBar use:action {...spread} {shorthand} class="a {b}" style={c} />',
-        options,
-      ),
-      '<FooBar use:action {...spread} {shorthand} class="a {b}" style={c} />',
+    expect(micromark('<FooBar use:action />', options)).toBe(
+      '<FooBar use:action />',
+    );
+
+    expect(micromark('<FooBar class="a {b}" style={c} />', options)).toBe(
+      '<FooBar class="a {b}" style={c} />',
+    );
+
+    expect(micromark('<FooBar {...spread} {shorthand} />', options)).toBe(
+      '<FooBar {...spread} {shorthand} />',
     );
   });
 
-  it('supports inline elements as text', () => {
-    strictEqual(
-      micromark('Have a pint <FooBarA />', options),
+  test('supports svelte tags', () => {
+    expect(micromark('<svelte:window />', options)).toBe('<svelte:window />');
+
+    expect(micromark('<svelte:element={foo} />', options)).toBe(
+      '<svelte:element={foo} />',
+    );
+  });
+
+  test('supports inline elements as text', () => {
+    expect(micromark('Have a pint <FooBarA />', options)).toBe(
       '<p>Have a pint <FooBarA /></p>',
     );
 
-    strictEqual(
-      micromark('<FooBarB /> had a pint', options),
+    expect(micromark('<FooBarB /> had a pint', options)).toBe(
       '<p><FooBarB /> had a pint</p>',
     );
 
-    strictEqual(
-      micromark('<FooBarC>Hi mom</FooBarC>', options),
+    expect(micromark('<FooBarC>Hi mom</FooBarC>', options)).toBe(
       '<p><FooBarC>Hi mom</FooBarC></p>',
     );
 
-    strictEqual(
+    expect(
       micromark(
         '<FooBarD>Trailing spaces should not matter</FooBarD>   ',
         options,
@@ -49,60 +56,102 @@ describe('svelteElement micromark extesion processes elements and components syn
       '<p><FooBarD>Trailing spaces should not matter</FooBarD></p>',
     );
 
-    strictEqual(
-      micromark('<FooBarE>**This is bold**</FooBarE>', options),
+    expect(micromark('<FooBarE>**This is bold**</FooBarE>', options)).toBe(
       '<p><FooBarE><strong>This is bold</strong></FooBarE></p>',
     );
   });
 
-  it('supports flow content based on eols and blank lines', () => {
-    strictEqual(
+  test('supports flow content based on eols and blank lines', () => {
+    expect(
       micromark('<FooBarF>\n**Some more bold**\n</FooBarF>', options),
-      '<FooBarF>\n<strong>Some more bold</strong>\n</FooBarF>',
-    );
+    ).toBe('<FooBarF>\n<strong>Some more bold</strong>\n</FooBarF>');
 
-    strictEqual(
+    expect(
       micromark('<FooBarG>\n# This is not a heading\n</FooBarG>', options),
-      '<FooBarG>\n# This is not a heading\n</FooBarG>',
-    );
+    ).toBe('<FooBarG>\n# This is not a heading\n</FooBarG>');
 
-    strictEqual(
+    expect(
       micromark('<FooBarH>\n\nI like turtles\n\n</FooBarH>', options),
-      '<FooBarH>\n<p>I like turtles</p>\n</FooBarH>',
-    );
+    ).toBe('<FooBarH>\n<p>I like turtles</p>\n</FooBarH>');
 
-    strictEqual(
+    expect(
       micromark('<FooBarI>\n\n# This is a heading\n\n</FooBarI>', options),
-      '<FooBarI>\n<h1>This is a heading</h1>\n</FooBarI>',
-    );
+    ).toBe('<FooBarI>\n<h1>This is a heading</h1>\n</FooBarI>');
 
-    strictEqual(
+    expect(
       micromark('<FooBarJ>\n\n**Dat beat is faaat**\n\n</FooBarJ>', options),
-      '<FooBarJ>\n<p><strong>Dat beat is faaat</strong></p>\n</FooBarJ>',
-    );
+    ).toBe('<FooBarJ>\n<p><strong>Dat beat is faaat</strong></p>\n</FooBarJ>');
   });
 
-  it('supports nested text tags', () => {
-    strictEqual(
-      micromark('<Foo><Bar>Hi mom</Bar></Foo>', options),
+  test('supports nested text tags', () => {
+    expect(micromark('<Foo><Bar>Hi mom</Bar></Foo>', options)).toBe(
       '<p><Foo><Bar>Hi mom</Bar></Foo></p>',
     );
   });
 
-  it('tokenizes nested flow tags', () => {
-    strictEqual(
-      micromark('<Foo>\n<Bar>Hi mom</Bar>\n</Foo>', options),
+  test('tokenizes nested flow tags', () => {
+    expect(micromark('<Foo>\n<Bar>Hi mom</Bar>\n</Foo>', options)).toBe(
       '<Foo>\n<Bar>Hi mom</Bar>\n</Foo>',
     );
   });
 
-  it('supports raw element content', () => {
-    strictEqual(
+  test('supports raw element content', () => {
+    expect(
       micromark(
-        '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
+        '<script lang="ts" module>const test = "a<b"; let value = $state(); const u = x * y * z;</script>',
         options,
       ),
-      '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
+      '<script lang="ts" module>const test = "a<b"; let value = $state(); const u = x * y * z;</script>',
     );
+
+    expect(
+      micromark('<script lang="ts" module>\n\n</script>', options),
+      '<script lang="ts" module>\n\n</script>',
+    );
+
+    // expect(
+    //   micromark(
+    //     '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
+    //     options,
+    //   ),
+    //   '<script lang="ts" module>\nconst test = "a<b";\n\nlet value = $state();\n</script>',
+    // );
+  });
+
+  test('supports multine tags', () => {
+    expect(
+      micromark(
+        dedent`
+				<a
+					href="foo/{bar}"
+					{...attributes}
+				/>`,
+        options,
+      ),
+    ).toBe(dedent`
+			<a
+				href="foo/{bar}"
+				{...attributes}
+			/>
+		`);
+
+    //   expect(
+    //     micromark(
+    //       dedent`
+    // 			<script
+    // 				module
+    // 				generics="T extends Foo<Bar>"
+    // 			>
+    // 				const { children }: { children: Snippet<[T]> } = $props();
+    // 			</script>`,
+    //       options,
+    //     ),
+    //   ).toBe(dedent`
+    // 		<script
+    // 			module
+    // 			generics="T extends Foo<Bar>"
+    // 		>
+    // 			const { children }: { children: Snippet<[T]> } = $props();
+    // 		</script>`);
   });
 });

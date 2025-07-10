@@ -208,6 +208,10 @@ export const tokens = {
    * ```markdown
    * > | <foo>
    *     ^   ^
+   * > | </foo>
+   *     ^^   ^
+   * > | <foo/>
+   *     ^   ^^
    * ```
    */
   elementTagMarker: 'mdsvElementTagMarker',

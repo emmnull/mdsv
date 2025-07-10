@@ -4,7 +4,7 @@ import { blankLine } from 'micromark-core-commonmark';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
 import { htmlRawNames } from 'micromark-util-html-tag-name';
-import { codes, constants, types as coreTypes } from 'micromark-util-symbol';
+import { codes, constants, types } from 'micromark-util-symbol';
 import type {
   Code,
   Construct,
@@ -96,7 +96,7 @@ const tokenizeElementFlow: Tokenizer = function (effects, ok, nok) {
       return raw(code);
     }
     if (markdownSpace(code)) {
-      return factorySpace(effects, endAfter, coreTypes.whitespace)(code);
+      return factorySpace(effects, endAfter, types.whitespace)(code);
     }
     if (markdownLineEnding(code)) {
       return effects.check(
@@ -145,9 +145,9 @@ const tokenizeElementFlow: Tokenizer = function (effects, ok, nok) {
    */
   function continuationStartNonLazy(code: Code) {
     assert(markdownLineEnding(code), 'expected to be at line ending');
-    effects.enter(coreTypes.lineEnding);
+    effects.enter(types.lineEnding);
     effects.consume(code);
-    effects.exit(coreTypes.lineEnding);
+    effects.exit(types.lineEnding);
     return chunkStart;
   }
 
@@ -165,7 +165,7 @@ const tokenizeElementFlow: Tokenizer = function (effects, ok, nok) {
     if (markdownLineEnding(code)) {
       return continuationStart(code);
     }
-    effects.enter(coreTypes.chunkText, {
+    effects.enter(types.chunkText, {
       contentType: constants.contentTypeText,
     });
     return chunk(code);
@@ -180,11 +180,11 @@ const tokenizeElementFlow: Tokenizer = function (effects, ok, nok) {
    */
   function chunk(code: Code) {
     if (code === codes.eof) {
-      effects.exit(coreTypes.chunkText);
+      effects.exit(types.chunkText);
       return ok(code);
     }
     if (markdownLineEnding(code)) {
-      effects.exit(coreTypes.chunkText);
+      effects.exit(types.chunkText);
       return effects.check(
         blankLineAfter,
         continuationAfter,
@@ -241,9 +241,9 @@ const tokenizeBlankLineAfter: Tokenizer = function (effects, ok, nok) {
    */
   function start(code: Code) {
     assert(markdownLineEnding(code), 'expected to be at line ending');
-    effects.enter(coreTypes.lineEnding);
+    effects.enter(types.lineEnding);
     effects.consume(code);
-    effects.exit(coreTypes.lineEnding);
+    effects.exit(types.lineEnding);
     return effects.attempt(blankLine, ok, nok);
   }
 };
@@ -273,9 +273,9 @@ const tokenizeNonLazyContinuationStart: Tokenizer = function (
    */
   function start(code: Code) {
     if (markdownLineEnding(code)) {
-      effects.enter(coreTypes.lineEnding);
+      effects.enter(types.lineEnding);
       effects.consume(code);
-      effects.exit(coreTypes.lineEnding);
+      effects.exit(types.lineEnding);
       return after;
     }
     return nok(code);
@@ -327,7 +327,6 @@ const tokenizeRawCloseTag: Tokenizer = function (effects, ok, nok) {
     effects.enter(tokens.flowElementTag);
     effects.enter(tokens.elementTagMarker);
     effects.consume(code);
-    effects.exit(tokens.elementTagMarker);
     return startAfter;
   }
 
@@ -340,6 +339,7 @@ const tokenizeRawCloseTag: Tokenizer = function (effects, ok, nok) {
   function startAfter(code: Code) {
     if (code === codes.slash) {
       effects.consume(code);
+      effects.exit(tokens.elementTagMarker);
       effects.enter(tokens.elementTagName);
       return tagName;
     }

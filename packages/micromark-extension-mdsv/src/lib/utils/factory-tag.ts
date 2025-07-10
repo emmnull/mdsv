@@ -1,11 +1,11 @@
 import { ok as assert } from 'devlop';
+import { factorySpace } from 'micromark-factory-space';
 import {
   asciiAlpha,
   asciiAlphanumeric,
-  markdownLineEnding,
-  markdownSpace,
+  markdownLineEndingOrSpace,
 } from 'micromark-util-character';
-import { codes } from 'micromark-util-symbol';
+import { codes, types } from 'micromark-util-symbol';
 import type { Code, Effects, State, TokenType } from 'micromark-util-types';
 import { factoryExpression } from './factory-expression.js';
 
@@ -34,7 +34,6 @@ export function factoryTag(
     effects.enter(markerType);
     effects.consume(code);
     effects.exit(markerType);
-    // effects.enter(valueType);
     return tagMarker;
   }
 
@@ -98,9 +97,8 @@ export function factoryTag(
     if (code === codes.rightCurlyBrace) {
       return end(code);
     }
-    if (markdownSpace(code) || markdownLineEnding(code)) {
-      effects.consume(code);
-      return nameAfter;
+    if (markdownLineEndingOrSpace(code)) {
+      return factorySpace(effects, nameAfter, types.whitespace)(code);
     }
     effects.enter(expressionType);
     return factoryExpression(

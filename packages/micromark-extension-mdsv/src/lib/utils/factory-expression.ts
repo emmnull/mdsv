@@ -1,10 +1,8 @@
-import { factorySpace } from 'micromark-factory-space';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
-  markdownSpace,
 } from 'micromark-util-character';
-import { codes, types as coreTypes } from 'micromark-util-symbol';
+import { codes } from 'micromark-util-symbol';
 import type { Code, Effects, State } from 'micromark-util-types';
 
 function isRegexFlag(code: Code) {
@@ -107,15 +105,15 @@ export function factoryExpression(
         }
       }
     }
-    if (markdownSpace(code)) {
-      return factorySpace(effects, start, coreTypes.whitespace)(code);
-    }
-    if (markdownLineEndingOrSpace(code)) {
-      effects.enter(coreTypes.whitespace);
-      effects.consume(code);
-      effects.exit(coreTypes.whitespace);
-      return start;
-    }
+    // if (markdownSpace(code)) {
+    //   return factorySpace(effects, start, types.whitespace)(code);
+    // }
+    // if (markdownLineEndingOrSpace(code)) {
+    //   // effects.enter(types.whitespace);
+    //   effects.consume(code);
+    //   // effects.exit(types.whitespace);
+    //   return start;
+    // }
     effects.consume(code);
     return start;
   }
@@ -164,10 +162,11 @@ export function factoryExpression(
     if (code === codes.eof) {
       return nok;
     }
-    if (markdownLineEnding(code)) {
-      effects.enter(coreTypes.whitespace);
+    if (markdownLineEndingOrSpace(code)) {
+      // return factorySpace(effects, start, types.whitespace)(code);
+      // effects.enter(types.whitespace);
       effects.consume(code);
-      effects.exit(coreTypes.whitespace);
+      // effects.exit(types.whitespace);
       return start;
     }
     effects.consume(code);
@@ -201,25 +200,21 @@ export function factoryExpression(
     if (code === codes.eof || markdownLineEnding(code)) {
       return nok;
     }
+    effects.consume(code);
     if (code === codes.backslash) {
-      effects.consume(code);
       return consumeRegexEscape;
     }
     if (code === codes.leftSquareBracket) {
       regexBrackets.push(code);
-      effects.consume(code);
       return consumeRegexBody;
     }
     if (code === codes.rightSquareBracket && regexBrackets.length > 0) {
       regexBrackets.pop();
-      effects.consume(code);
       return consumeRegexBody;
     }
     if (code === codes.slash && !regexBrackets.length) {
-      effects.consume(code);
       return consumeRegexFlags;
     }
-    effects.consume(code);
     return consumeRegexBody;
   }
 
@@ -231,31 +226,28 @@ export function factoryExpression(
     return consumeRegexBody;
   }
 
-  function consumeRegexFlags(code: Code) {
+  function consumeRegexFlags(code: Code): State | undefined {
     if (isRegexFlag(code)) {
       effects.consume(code);
       return consumeRegexFlags;
     }
-    return start;
+    return start(code);
   }
 
   function consumeTemplateLiteral(code: Code): State {
     if (code === codes.eof) {
       return nok;
     }
+    effects.consume(code);
     if (code === codes.graveAccent) {
-      effects.consume(code);
       return start;
     }
     if (code === codes.backslash) {
-      effects.consume(code);
       return consumeTemplateLiteralEscape;
     }
     if (code === codes.dollarSign) {
-      effects.consume(code);
       return consumeTemplateLiteralPossibleExpression;
     }
-    effects.consume(code);
     return consumeTemplateLiteral;
   }
 

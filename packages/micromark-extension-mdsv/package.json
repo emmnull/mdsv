@@ -13,10 +13,8 @@
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -40,5 +38,14 @@
     "micromark-util-resolve-all": "^2.0.1",
     "micromark-util-symbol": "^2.0.1",
     "micromark-util-types": "^2.0.2"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

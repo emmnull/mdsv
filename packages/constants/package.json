@@ -6,18 +6,20 @@
   "author": "Emmanuel Beaudry Marchand <emmbema@gmail.com>",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.js",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsc --build --clean && tsc --build",
-    "build:watch": "tsc --build --clean && tsc --build --watch --preserveWatchOutput",
-    "test": "node --test",
-    "test:watch": "node --test --watch"
+  "scripts": {},
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

@@ -1,5 +1,11 @@
 import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-  workspace: 'auto',
+  dts: true,
+  platform: 'neutral',
+  exports: {
+    devExports: true,
+  },
+  workspace: 'packages/*',
+  skipNodeModulesBundle: true,
 });

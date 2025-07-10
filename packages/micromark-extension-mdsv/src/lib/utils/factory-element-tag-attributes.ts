@@ -1,9 +1,11 @@
 import { ok as assert } from 'devlop';
+import { factorySpace } from 'micromark-factory-space';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
+  markdownSpace,
 } from 'micromark-util-character';
-import { codes } from 'micromark-util-symbol';
+import { codes, types } from 'micromark-util-symbol';
 import type { Code, Effects, State, TokenType } from 'micromark-util-types';
 import { factoryExpression } from './factory-expression.js';
 
@@ -42,8 +44,13 @@ export function factoryElementTagAttributes(
     if (code === codes.eof) {
       return nok(code);
     }
-    if (markdownLineEndingOrSpace(code)) {
+    if (markdownSpace(code)) {
+      return factorySpace(effects, start, types.whitespace)(code);
+    }
+    if (markdownLineEnding(code)) {
+      effects.enter(types.whitespace);
       effects.consume(code);
+      effects.exit(types.whitespace);
       return start;
     }
     return attributeStart(code);
@@ -76,14 +83,13 @@ export function factoryElementTagAttributes(
     }
     if (markdownLineEndingOrSpace(code)) {
       effects.exit(attributeType);
-      effects.consume(code);
-      return start;
+      return factorySpace(effects, start, types.whitespace)(code);
     }
     if (code === codes.quotationMark || code === codes.apostrophe) {
       return attributeQuoteStart(code);
     }
+    effects.consume(code);
     if (code === codes.leftCurlyBrace) {
-      effects.consume(code);
       return factoryExpression(
         effects,
         attributeBraceEnd,
@@ -91,7 +97,6 @@ export function factoryElementTagAttributes(
         codes.rightCurlyBrace,
       );
     }
-    effects.consume(code);
     return attribute;
   }
 
@@ -131,6 +136,7 @@ export function factoryElementTagAttributes(
    */
   function attributeQuoteBraceEnd(brace: Code) {
     assert(brace === codes.rightCurlyBrace, 'expected `}`');
+    effects.consume(brace);
     return attributeQuote;
   }
 

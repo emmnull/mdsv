@@ -1,7 +1,7 @@
 import { tokens } from '@mdsv/constants';
 import { factorySpace } from 'micromark-factory-space';
 import { markdownLineEnding, markdownSpace } from 'micromark-util-character';
-import { codes, types as coreTypes } from 'micromark-util-symbol';
+import { codes, types } from 'micromark-util-symbol';
 import type {
   Code,
   Extension,
@@ -70,7 +70,7 @@ const tokenizeTagFlow: Tokenizer = function (effects, ok, nok) {
       return ok(code);
     }
     if (markdownSpace(code)) {
-      return factorySpace(effects, endAfter, coreTypes.whitespace)(code);
+      return factorySpace(effects, endAfter, types.whitespace)(code);
     }
     if (markdownLineEnding(code)) {
       return ok(code);
